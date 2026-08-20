@@ -1,3 +1,5 @@
+import PortfolioGraph from "./PortfolioGraph";
+
 export default function NetWorthCard() {
   return (
     <section className="rounded-3xl border border-white/5 bg-gradient-to-br from-zinc-900 to-zinc-900/40 p-8 shadow-2xl shadow-black/40 sm:p-10">
@@ -26,6 +28,8 @@ export default function NetWorthCard() {
       </div>
 
       <p className="mt-2 text-sm text-zinc-500">Across all connected accounts</p>
+
+      <PortfolioGraph />
     </section>
   );
 }

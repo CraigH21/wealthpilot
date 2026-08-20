@@ -1,6 +1,5 @@
 import Navbar from "./components/Navbar";
 import NetWorthCard from "./components/NetWorthCard";
-import PerformanceChart from "./components/PerformanceChart";
 import PortfolioCard from "./components/PortfolioCard";
 import AIInsightCard from "./components/AIInsightCard";
 
@@ -46,7 +45,6 @@ export default function Home() {
 
       <main className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-10">
         <NetWorthCard />
-        <PerformanceChart />
 
         <div>
           <h2 className="mb-4 text-base font-semibold text-zinc-50">
