@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+:root {
+  --background: #09090b;
+  --foreground: #fafafa;
+
+  /* Default accent (Emerald) — matches the theme applied before the
+     inline theme-init script runs, so there is no flash on first paint. */
+  --accent: #34d399;
+  --accent-strong: #10b981;
+  --accent-soft: rgba(16, 185, 129, 0.1);
+  --accent-border: rgba(16, 185, 129, 0.2);
+  --accent-from: #34d399;
+  --accent-to: #059669;
+}
+
+[data-theme="emerald"] {
+  --accent: #34d399;
+  --accent-strong: #10b981;
+  --accent-soft: rgba(16, 185, 129, 0.1);
+  --accent-border: rgba(16, 185, 129, 0.2);
+  --accent-from: #34d399;
+  --accent-to: #059669;
+}
+
+[data-theme="purple"] {
+  --accent: #c084fc;
+  --accent-strong: #a855f7;
+  --accent-soft: rgba(168, 85, 247, 0.1);
+  --accent-border: rgba(168, 85, 247, 0.2);
+  --accent-from: #c084fc;
+  --accent-to: #9333ea;
+}
+
+[data-theme="ocean"] {
+  --accent: #38bdf8;
+  --accent-strong: #0ea5e9;
+  --accent-soft: rgba(14, 165, 233, 0.1);
+  --accent-border: rgba(14, 165, 233, 0.2);
+  --accent-from: #38bdf8;
+  --accent-to: #0284c7;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-border: var(--accent-border);
+  --color-accent-from: var(--accent-from);
+  --color-accent-to: var(--accent-to);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
