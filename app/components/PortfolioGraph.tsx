@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import {
   Area,
   AreaChart,
+  CartesianGrid,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -12,9 +12,9 @@ import {
   type TooltipContentProps,
 } from "recharts";
 
-type Range = "1D" | "1W" | "1M" | "1Y";
+export type Range = "1D" | "1W" | "1M" | "1Y" | "ALL";
 
-const RANGES: Range[] = ["1D", "1W", "1M", "1Y"];
+export const RANGES: Range[] = ["1D", "1W", "1M", "1Y", "ALL"];
 
 type Point = { label: string; value: number };
 
@@ -64,6 +64,14 @@ const DATA: Record<Range, Point[]> = {
     { label: "Jul", value: 180100 },
     { label: "Aug", value: 184320 },
   ],
+  ALL: [
+    { label: "2023", value: 98000 },
+    { label: "2024", value: 128000 },
+    { label: "Q1", value: 152000 },
+    { label: "Q2", value: 165000 },
+    { label: "Q3", value: 178000 },
+    { label: "Now", value: 184320 },
+  ],
 };
 
 const formatValue = (value: number) =>
@@ -72,6 +80,10 @@ const formatValue = (value: number) =>
     currency: "GBP",
     maximumFractionDigits: 0,
   }).format(value);
+
+const formatAxisValue = (value: number) => `${Math.round(value / 1000)}K`;
+
+const axisTick = { fill: "#71717a", fontSize: 11 };
 
 // A single soft glow on the line path itself, scoped to just
 // `.recharts-area-curve` — applying `filter` any higher up would blur the
@@ -115,72 +127,61 @@ function GlowDot({ cx, cy }: ActiveDotProps) {
   );
 }
 
-export default function PortfolioGraph() {
-  const [range, setRange] = useState<Range>("1M");
+export default function PortfolioGraph({ range }: { range: Range }) {
   const data = DATA[range];
 
   return (
-    <div className="mt-8">
-      <div className="mb-5 flex items-center justify-between">
-        <span className="text-xs font-medium text-zinc-500">
-          Portfolio Performance
-        </span>
-
-        <div className="flex -translate-y-3 items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-md">
-          {RANGES.map((option) => {
-            const active = option === range;
-            return (
-              <button
-                key={option}
-                type="button"
-                onClick={() => setRange(option)}
-                className={`rounded-full px-3 py-1 text-xs font-medium transition-all duration-300 ease-out ${
-                  active
-                    ? "bg-accent-soft text-accent shadow-[0_0_14px_var(--accent-glow)]"
-                    : "text-zinc-500 hover:text-zinc-300"
-                }`}
-              >
-                {option}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="relative h-[315px] w-full overflow-hidden rounded-2xl bg-transparent">
-        <div className={`h-full w-full ${LINE_GLOW}`}>
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              key={range}
-              data={data}
-              margin={{ top: 16, right: 8, left: 8, bottom: 8 }}
-            >
-              <defs>
-                <linearGradient id="portfolioFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.55} />
-                  <stop offset="55%" stopColor="var(--accent)" stopOpacity={0.15} />
-                  <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="label" hide />
-              <YAxis hide domain={["dataMin - 4000", "dataMax + 4000"]} />
-              <Tooltip content={CustomTooltip} cursor={false} />
-              <Area
-                type="monotone"
-                dataKey="value"
-                stroke="var(--accent)"
-                strokeWidth={2.5}
-                fill="url(#portfolioFill)"
-                fillOpacity={1}
-                dot={false}
-                activeDot={GlowDot}
-                isAnimationActive
-                animationDuration={700}
-                animationEasing="ease-out"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+    <div className="relative mt-6 h-[280px] w-full overflow-hidden rounded-2xl bg-transparent">
+      <div className={`h-full w-full ${LINE_GLOW}`}>
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            key={range}
+            data={data}
+            margin={{ top: 16, right: 8, left: 0, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="portfolioFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.55} />
+                <stop offset="55%" stopColor="var(--accent)" stopOpacity={0.15} />
+                <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid
+              horizontal
+              vertical={false}
+              stroke="rgba(255,255,255,0.08)"
+            />
+            <XAxis
+              dataKey="label"
+              tick={axisTick}
+              axisLine={false}
+              tickLine={false}
+              tickMargin={10}
+            />
+            <YAxis
+              domain={["dataMin - 4000", "dataMax + 4000"]}
+              tick={axisTick}
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={formatAxisValue}
+              width={44}
+            />
+            <Tooltip content={CustomTooltip} cursor={false} />
+            <Area
+              type="monotone"
+              dataKey="value"
+              stroke="var(--accent)"
+              strokeWidth={2.5}
+              fill="url(#portfolioFill)"
+              fillOpacity={1}
+              dot={false}
+              activeDot={GlowDot}
+              isAnimationActive
+              animationDuration={700}
+              animationEasing="ease-out"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

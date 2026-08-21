@@ -7,6 +7,7 @@ const SWATCH_CLASS: Record<Theme, string> = {
   emerald: "bg-emerald-400",
   purple: "bg-purple-400",
   ocean: "bg-sky-400",
+  gold: "bg-amber-500",
 };
 
 export default function ThemeSwitcher() {
@@ -51,7 +52,7 @@ export default function ThemeSwitcher() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-12 w-48 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-md"
+          className="absolute right-0 top-12 z-50 w-48 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-md"
         >
           <p className="px-3 pb-1.5 pt-1 text-xs font-medium text-zinc-500">
             Appearance

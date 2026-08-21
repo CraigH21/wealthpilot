@@ -8,12 +8,13 @@ import {
   type ReactNode,
 } from "react";
 
-export type Theme = "emerald" | "purple" | "ocean";
+export type Theme = "emerald" | "purple" | "ocean" | "gold";
 
 export const THEMES: { id: Theme; label: string }[] = [
   { id: "emerald", label: "Emerald" },
   { id: "purple", label: "Purple AI" },
   { id: "ocean", label: "Ocean Blue" },
+  { id: "gold", label: "BTC Gold" },
 ];
 
 const STORAGE_KEY = "wealthpilot-theme";

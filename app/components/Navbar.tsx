@@ -4,8 +4,8 @@ const NAV_ITEMS = ["Dashboard", "Portfolio", "Goals", "AI Coach"];
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-10 border-b border-white/5 bg-[#09090B]/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+    <header className="relative border-b border-white/10 px-5 sm:px-8 lg:px-10">
+      <div className="flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-soft text-accent transition-colors duration-500 ease-out">
             <svg
@@ -31,10 +31,10 @@ export default function Navbar() {
             <a
               key={item}
               href="#"
-              className={`rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300 ease-out ${
+              className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors duration-300 ease-out ${
                 index === 0
-                  ? "bg-white/5 text-zinc-50"
-                  : "text-zinc-400 hover:text-zinc-50"
+                  ? "border-accent-border bg-accent-soft text-accent"
+                  : "border-transparent text-zinc-400 hover:text-accent"
               }`}
             >
               {item}

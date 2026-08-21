@@ -10,9 +10,11 @@
   --accent-strong: #10b981;
   --accent-soft: rgba(16, 185, 129, 0.1);
   --accent-border: rgba(16, 185, 129, 0.2);
+  --accent-border-strong: rgba(16, 185, 129, 0.45);
   --accent-glow: rgba(16, 185, 129, 0.45);
   --accent-from: #34d399;
   --accent-to: #059669;
+  --bg-image: url("/themes/bg-emerald.jpg");
 }
 
 [data-theme="emerald"] {
@@ -20,9 +22,11 @@
   --accent-strong: #10b981;
   --accent-soft: rgba(16, 185, 129, 0.1);
   --accent-border: rgba(16, 185, 129, 0.2);
+  --accent-border-strong: rgba(16, 185, 129, 0.45);
   --accent-glow: rgba(16, 185, 129, 0.45);
   --accent-from: #34d399;
   --accent-to: #059669;
+  --bg-image: url("/themes/bg-emerald.jpg");
 }
 
 [data-theme="purple"] {
@@ -30,9 +34,11 @@
   --accent-strong: #a855f7;
   --accent-soft: rgba(168, 85, 247, 0.1);
   --accent-border: rgba(168, 85, 247, 0.2);
+  --accent-border-strong: rgba(168, 85, 247, 0.45);
   --accent-glow: rgba(168, 85, 247, 0.45);
   --accent-from: #c084fc;
   --accent-to: #9333ea;
+  --bg-image: url("/themes/bg-purple.jpg");
 }
 
 [data-theme="ocean"] {
@@ -40,9 +46,23 @@
   --accent-strong: #0ea5e9;
   --accent-soft: rgba(14, 165, 233, 0.1);
   --accent-border: rgba(14, 165, 233, 0.2);
+  --accent-border-strong: rgba(14, 165, 233, 0.45);
   --accent-glow: rgba(14, 165, 233, 0.45);
   --accent-from: #38bdf8;
   --accent-to: #0284c7;
+  --bg-image: url("/themes/bg-ocean.jpg");
+}
+
+[data-theme="gold"] {
+  --accent: #f59e0b;
+  --accent-strong: #d97706;
+  --accent-soft: rgba(245, 158, 11, 0.1);
+  --accent-border: rgba(245, 158, 11, 0.2);
+  --accent-border-strong: rgba(255, 209, 102, 0.5);
+  --accent-glow: rgba(255, 209, 102, 0.45);
+  --accent-from: #f59e0b;
+  --accent-to: #b45309;
+  --bg-image: url("/themes/bg-gold.jpg");
 }
 
 @theme inline {
@@ -59,7 +79,40 @@
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image: linear-gradient(rgba(9, 9, 11, 0.4), rgba(9, 9, 11, 0.4)), var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  transition: background-image 500ms ease-out;
+}
+
+/* Shared "3D glass edge" treatment: a thin theme-coloured border plus a
+   soft blurred highlight glowing in from the top-left corner (light) and
+   the theme accent glowing in from the bottom-right (colour), both via
+   inset box-shadow. Tried a masked gradient-ring overlay first, but the
+   mask-composite curve along rounded corners rendered visibly pixelated in
+   this browser, and a background-clip gradient border on the same blurred
+   element made the fill disappear entirely — box-shadow has neither
+   problem, so it's the base this now stands on. */
+.glass-edge-shell {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--accent-border);
+  transition: background-color 500ms ease-out, border-color 500ms ease-out;
+}
+
+.glass-edge-card {
+  background-color: rgba(9, 9, 11, 0.28);
+  border: 1px solid var(--accent-border);
+  transition: background-color 500ms ease-out, border-color 500ms ease-out;
+}
+
+/* Hero variant for the portfolio graph card — brighter border and a
+   stronger top-left highlight than the smaller cards, so the chart reads
+   as the dashboard's focal point instead of blending into the shell. */
+.glass-edge-hero {
+  border-color: var(--accent-border-strong);
 }
