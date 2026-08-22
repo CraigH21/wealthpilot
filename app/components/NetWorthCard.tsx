@@ -14,7 +14,7 @@ export default function NetWorthCard() {
     <section
       ref={cardRef}
       onMouseMove={handleMouseMove}
-      className="group glass-edge-card glass-edge-hero relative overflow-hidden rounded-3xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_4px_4px_14px_rgba(255,255,255,0.2),inset_-2px_-2px_6px_var(--accent-soft)] backdrop-blur-[32px] sm:p-10"
+      className="group glass-edge-card glass-edge-hero relative flex h-full flex-col overflow-hidden rounded-3xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_4px_4px_14px_rgba(255,255,255,0.2),inset_-2px_-2px_6px_var(--accent-soft)] backdrop-blur-[32px] sm:p-10"
     >
       <EdgeGlow />
 

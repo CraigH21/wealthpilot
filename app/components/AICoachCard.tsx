@@ -40,18 +40,9 @@ export default function AICoachCard({
     >
       <EdgeGlow />
 
-      <div className="flex items-center gap-2">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          className="h-4 w-4 text-accent"
-          stroke="currentColor"
-          strokeWidth={1.75}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z" />
-        </svg>
+      <div className="flex items-center gap-2.5">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/icons/ai-coach.svg" alt="" className="h-9 w-9 shrink-0" />
         <h3 className="text-sm font-semibold text-zinc-50">AI Coach</h3>
       </div>
 

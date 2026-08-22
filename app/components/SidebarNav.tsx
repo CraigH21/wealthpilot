@@ -1,7 +1,4 @@
-"use client";
-
-import EdgeGlow from "./EdgeGlow";
-import { useEdgeGlow } from "../hooks/useEdgeGlow";
+import TodaysSnapshot from "./TodaysSnapshot";
 
 const NAV_ITEMS = [
   {
@@ -60,11 +57,9 @@ const NAV_ITEMS = [
   },
 ];
 
-export default function Sidebar() {
-  const { cardRef, handleMouseMove } = useEdgeGlow<HTMLDivElement>();
-
+export default function SidebarNav() {
   return (
-    <aside className="flex w-full flex-col justify-between gap-8 lg:w-52 lg:shrink-0">
+    <div className="flex h-full flex-col gap-6">
       <nav className="flex flex-col gap-1">
         {NAV_ITEMS.map((item, index) => {
           const active = index === 0;
@@ -95,46 +90,9 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div
-        ref={cardRef}
-        onMouseMove={handleMouseMove}
-        className="group glass-edge-card relative rounded-2xl p-4 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_3px_3px_8px_rgba(255,255,255,0.1),inset_-2px_-2px_6px_var(--accent-soft)] backdrop-blur-[32px]"
-      >
-        <EdgeGlow />
-
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          className="h-5 w-5 text-accent"
-          stroke="currentColor"
-          strokeWidth={1.75}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.3L12 16.9l-5.6 3.2 1.4-6.3-4.8-4.3 6.4-.6L12 3z" />
-        </svg>
-        <p className="mt-3 text-sm font-medium text-zinc-50">
-          Unlock more with Pro
-        </p>
-        <p className="mt-1 text-xs text-zinc-500">£9/month</p>
-        <button
-          type="button"
-          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent-soft px-4 py-2 text-sm font-medium text-accent shadow-[0_0_16px_var(--accent-glow)] transition-all duration-300 ease-out hover:bg-accent-border"
-        >
-          Upgrade
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            className="h-3.5 w-3.5"
-            stroke="currentColor"
-            strokeWidth={2.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M5 12h14M13 6l6 6-6 6" />
-          </svg>
-        </button>
+      <div className="mt-auto">
+        <TodaysSnapshot />
       </div>
-    </aside>
+    </div>
   );
 }

@@ -1,8 +1,8 @@
 const ACCOUNTS = [
-  { name: "Trading 212", initials: "T2", accent: "bg-zinc-500/10 text-zinc-300" },
-  { name: "Coinbase Wallet", initials: "C", accent: "bg-sky-500/10 text-sky-400" },
-  { name: "Kraken", initials: "K", accent: "bg-purple-500/10 text-purple-400" },
-  { name: "Barclays", initials: "B", accent: "bg-sky-500/10 text-sky-400" },
+  { name: "Trading 212", logo: "/icons/platforms/trading212.png" },
+  { name: "Coinbase Wallet", logo: "/icons/platforms/coinbase.png" },
+  { name: "Kraken", logo: "/icons/platforms/kraken.png" },
+  { name: "Barclays", logo: "/icons/platforms/barclays.png" },
   { name: "Cash ISA", initials: "$", accent: "bg-zinc-500/10 text-zinc-300" },
 ];
 
@@ -34,11 +34,20 @@ export default function ConnectedAccounts() {
             key={account.name}
             className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1.5 pl-1.5 pr-3 text-xs font-medium text-zinc-300"
           >
-            <span
-              className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold ${account.accent}`}
-            >
-              {account.initials}
-            </span>
+            {account.logo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={account.logo}
+                alt=""
+                className="h-5 w-5 rounded-full bg-white/10 object-cover"
+              />
+            ) : (
+              <span
+                className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold ${account.accent}`}
+              >
+                {account.initials}
+              </span>
+            )}
             {account.name}
           </div>
         ))}

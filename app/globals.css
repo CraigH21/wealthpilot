@@ -15,6 +15,14 @@
   --accent-from: #34d399;
   --accent-to: #059669;
   --bg-image: url("/themes/bg-emerald.jpg");
+
+  /* "Pro" accent deliberately borrows the NEXT theme's colour rather than
+     the active one, so the upgrade box always pops instead of blending
+     into whichever theme is on screen. */
+  --pro-accent: #c084fc;
+  --pro-soft: rgba(168, 85, 247, 0.14);
+  --pro-strong: rgba(168, 85, 247, 0.3);
+  --pro-glow: rgba(168, 85, 247, 0.5);
 }
 
 [data-theme="emerald"] {
@@ -27,6 +35,10 @@
   --accent-from: #34d399;
   --accent-to: #059669;
   --bg-image: url("/themes/bg-emerald.jpg");
+  --pro-accent: #c084fc;
+  --pro-soft: rgba(168, 85, 247, 0.14);
+  --pro-strong: rgba(168, 85, 247, 0.3);
+  --pro-glow: rgba(168, 85, 247, 0.5);
 }
 
 [data-theme="purple"] {
@@ -39,6 +51,10 @@
   --accent-from: #c084fc;
   --accent-to: #9333ea;
   --bg-image: url("/themes/bg-purple.jpg");
+  --pro-accent: #38bdf8;
+  --pro-soft: rgba(14, 165, 233, 0.14);
+  --pro-strong: rgba(14, 165, 233, 0.3);
+  --pro-glow: rgba(14, 165, 233, 0.5);
 }
 
 [data-theme="ocean"] {
@@ -51,6 +67,10 @@
   --accent-from: #38bdf8;
   --accent-to: #0284c7;
   --bg-image: url("/themes/bg-ocean.jpg");
+  --pro-accent: #f59e0b;
+  --pro-soft: rgba(245, 158, 11, 0.14);
+  --pro-strong: rgba(245, 158, 11, 0.3);
+  --pro-glow: rgba(255, 209, 102, 0.5);
 }
 
 [data-theme="gold"] {
@@ -63,6 +83,10 @@
   --accent-from: #f59e0b;
   --accent-to: #b45309;
   --bg-image: url("/themes/bg-gold.jpg");
+  --pro-accent: #34d399;
+  --pro-soft: rgba(16, 185, 129, 0.14);
+  --pro-strong: rgba(16, 185, 129, 0.3);
+  --pro-glow: rgba(16, 185, 129, 0.5);
 }
 
 @theme inline {
