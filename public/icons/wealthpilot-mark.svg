@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<defs>
+  <linearGradient id="wp-mark" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#42F59B"/>
+    <stop offset="55%" stop-color="#2EE6C2"/>
+    <stop offset="100%" stop-color="#14D8FF"/>
+  </linearGradient>
+</defs>
+
+<path fill="url(#wp-mark)" d="
+M18 36
+C22 36 25 38 27 42
+L40 73
+L52 49
+C54 45 57 43 60 43
+C63 43 66 45 68 49
+L77 66
+L88 42
+C90 38 93 36 97 36
+C102 36 106 40 106 45
+C106 47 105 49 104 51
+L87 88
+C85 92 81 94 77 94
+C73 94 70 92 68 88
+L60 73
+L52 88
+C50 92 47 94 43 94
+C39 94 35 92 33 88
+L14 51
+C13 49 12 47 12 45
+C12 40 15 36 18 36Z"/>
+</svg>
