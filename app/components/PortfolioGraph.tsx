@@ -11,6 +11,7 @@ import {
   type ActiveDotProps,
   type TooltipContentProps,
 } from "recharts";
+import type { NetWorthPoint } from "../lib/mock/portfolioContext";
 
 export type Range = "1D" | "1W" | "1M" | "1Y" | "ALL";
 
@@ -18,61 +19,54 @@ export const RANGES: Range[] = ["1D", "1W", "1M", "1Y", "ALL"];
 
 type Point = { label: string; value: number };
 
-const DATA: Record<Range, Point[]> = {
-  "1D": [
-    { label: "00:00", value: 181200 },
-    { label: "02:00", value: 181800 },
-    { label: "04:00", value: 180950 },
-    { label: "06:00", value: 182400 },
-    { label: "08:00", value: 183100 },
-    { label: "10:00", value: 182700 },
-    { label: "12:00", value: 183600 },
-    { label: "14:00", value: 184100 },
-    { label: "16:00", value: 183800 },
-    { label: "18:00", value: 184500 },
-    { label: "20:00", value: 183950 },
-    { label: "22:00", value: 184320 },
-  ],
-  "1W": [
-    { label: "Mon", value: 174200 },
-    { label: "Tue", value: 176800 },
-    { label: "Wed", value: 175400 },
-    { label: "Thu", value: 178900 },
-    { label: "Fri", value: 180200 },
-    { label: "Sat", value: 179650 },
-    { label: "Sun", value: 184320 },
-  ],
-  "1M": [
-    { label: "Wk 1", value: 168500 },
-    { label: "Wk 2", value: 171200 },
-    { label: "Wk 3", value: 174800 },
-    { label: "Wk 4", value: 176300 },
-    { label: "Wk 5", value: 179900 },
-    { label: "Today", value: 184320 },
-  ],
-  "1Y": [
-    { label: "Sep", value: 142000 },
-    { label: "Oct", value: 148500 },
-    { label: "Nov", value: 151200 },
-    { label: "Dec", value: 155800 },
-    { label: "Jan", value: 159400 },
-    { label: "Feb", value: 162100 },
-    { label: "Mar", value: 165700 },
-    { label: "Apr", value: 169800 },
-    { label: "May", value: 172300 },
-    { label: "Jun", value: 176900 },
-    { label: "Jul", value: 180100 },
-    { label: "Aug", value: 184320 },
-  ],
-  ALL: [
-    { label: "2023", value: 98000 },
-    { label: "2024", value: 128000 },
-    { label: "Q1", value: 152000 },
-    { label: "Q2", value: 165000 },
-    { label: "Q3", value: 178000 },
-    { label: "Now", value: 184320 },
-  ],
-};
+const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// Deliberately not random — the same fixed offsets every time, scaled to a
+// small fraction of the underlying trend, so short ranges don't look like a
+// perfectly straight ramp between two anchor points but stay reproducible.
+const WOBBLE = [0.1, -0.3, 0.5, -0.15, 0.35, -0.2, 0.25, -0.1, 0.4, -0.25, 0.15, 0];
+
+/** Derives every range from the real net-worth history (six real monthly
+ * anchor points) instead of five disconnected hardcoded arrays. 1Y/ALL use
+ * the anchors directly; 1M interpolates between the last two; 1D/1W extend
+ * that same trend into a short run with a small fixed wobble, always ending
+ * exactly on the current net worth. */
+function deriveRangeData(history: NetWorthPoint[], range: Range): Point[] {
+  if (history.length === 0) return [];
+
+  if (range === "ALL" || range === "1Y") {
+    return history.map((point) => ({
+      label: MONTH_LABELS[new Date(point.date).getMonth()],
+      value: point.value,
+    }));
+  }
+
+  const last = history[history.length - 1].value;
+  const prev = history[history.length - 2]?.value ?? last;
+  const totalMove = last - prev;
+
+  if (range === "1M") {
+    const steps = 5;
+    return Array.from({ length: steps + 1 }, (_, i) => ({
+      label: i === steps ? "Today" : `Wk ${i + 1}`,
+      value: Math.round(prev + (totalMove * i) / steps),
+    }));
+  }
+
+  const isWeek = range === "1W";
+  const points = isWeek ? 7 : 12;
+  const labels = isWeek
+    ? ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    : Array.from({ length: 12 }, (_, i) => `${String(i * 2).padStart(2, "0")}:00`);
+
+  return Array.from({ length: points }, (_, i) => {
+    const isLast = i === points - 1;
+    const progress = (i + 1) / points;
+    const trendValue = prev + totalMove * progress;
+    const wobble = isLast ? 0 : WOBBLE[i % WOBBLE.length] * Math.abs(totalMove) * 0.15;
+    return { label: labels[i], value: Math.round(isLast ? last : trendValue + wobble) };
+  });
+}
 
 const formatValue = (value: number) =>
   new Intl.NumberFormat("en-GB", {
@@ -127,8 +121,8 @@ function GlowDot({ cx, cy }: ActiveDotProps) {
   );
 }
 
-export default function PortfolioGraph({ range }: { range: Range }) {
-  const data = DATA[range];
+export default function PortfolioGraph({ range, history }: { range: Range; history: NetWorthPoint[] }) {
+  const data = deriveRangeData(history, range);
 
   return (
     <div className="relative mt-6 h-[280px] w-full overflow-hidden rounded-2xl bg-transparent">

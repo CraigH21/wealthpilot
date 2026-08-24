@@ -5,10 +5,31 @@ import ConnectedAccounts from "./ConnectedAccounts";
 import EdgeGlow from "./EdgeGlow";
 import PortfolioGraph, { RANGES, type Range } from "./PortfolioGraph";
 import { useEdgeGlow } from "../hooks/useEdgeGlow";
+import type { ConnectedAccount, NetWorthPoint } from "../lib/mock/portfolioContext";
 
-export default function NetWorthCard() {
+const formatGBP = (value: number) =>
+  new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+    maximumFractionDigits: 0,
+  }).format(value);
+
+type NetWorthCardProps = {
+  netWorth: number;
+  netWorthChangePct: number;
+  history: NetWorthPoint[];
+  accounts: ConnectedAccount[];
+};
+
+export default function NetWorthCard({
+  netWorth,
+  netWorthChangePct,
+  history,
+  accounts,
+}: NetWorthCardProps) {
   const [range, setRange] = useState<Range>("1M");
   const { cardRef, handleMouseMove } = useEdgeGlow<HTMLElement>();
+  const positive = netWorthChangePct >= 0;
 
   return (
     <section
@@ -30,10 +51,14 @@ export default function NetWorthCard() {
 
             <div className="mt-3 flex flex-wrap items-end gap-4">
               <h1 className="text-5xl font-semibold tracking-tight text-zinc-50 sm:text-6xl">
-                £184,320
+                {formatGBP(netWorth)}
               </h1>
 
-              <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-accent-soft px-3 py-1 text-sm font-medium text-accent transition-colors duration-500 ease-out">
+              <span
+                className={`mb-1 inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium transition-colors duration-500 ease-out ${
+                  positive ? "bg-accent-soft text-accent" : "bg-red-500/10 text-red-400"
+                }`}
+              >
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -43,10 +68,20 @@ export default function NetWorthCard() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <path d="M12 19V5" />
-                  <path d="M5 12l7-7 7 7" />
+                  {positive ? (
+                    <>
+                      <path d="M12 19V5" />
+                      <path d="M5 12l7-7 7 7" />
+                    </>
+                  ) : (
+                    <>
+                      <path d="M12 5v14" />
+                      <path d="M19 12l-7 7-7-7" />
+                    </>
+                  )}
                 </svg>
-                +3.2% this month
+                {positive ? "+" : ""}
+                {netWorthChangePct}% this month
               </span>
             </div>
 
@@ -76,9 +111,9 @@ export default function NetWorthCard() {
           </div>
         </div>
 
-        <ConnectedAccounts />
+        <ConnectedAccounts accounts={accounts} />
 
-        <PortfolioGraph range={range} />
+        <PortfolioGraph range={range} history={history} />
       </div>
     </section>
   );

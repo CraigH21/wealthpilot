@@ -1,5 +1,6 @@
 import Link from "next/link";
 import HeroDashboardStack from "./components/HeroDashboardStack";
+import ConnectedSection from "./components/ConnectedSection";
 
 const NAV_LINKS = ["Home", "Features", "Pricing", "Security", "Resources"];
 
@@ -41,6 +42,17 @@ export default function Home() {
         }}
       >
         <div className="h-full w-full bg-[url('/hero/hero-bg.jpg')] bg-cover bg-top bg-no-repeat" />
+
+        {/* Softens the top-right planet's bloom — dims its body/glow while
+            leaving the bright rim edge untouched. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-0 top-0 h-[45%] w-[38%]"
+          style={{
+            background:
+              "radial-gradient(circle at 60% 38%, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.32) 32%, rgba(0,0,0,0.14) 50%, transparent 65%)",
+          }}
+        />
       </div>
 
       <main className="relative mx-auto w-[94%] max-w-[1600px]">
@@ -86,8 +98,20 @@ export default function Home() {
           </div>
         </header>
 
-        <section className="px-5 pb-6 pt-[24px] text-center sm:px-8 lg:px-10 lg:pb-8 lg:pt-[36px]">
-              <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-medium text-zinc-300 backdrop-blur-md">
+        <section className="relative px-5 pb-6 pt-[24px] text-center sm:px-8 lg:px-10 lg:pb-8 lg:pt-[36px]">
+              {/* Readability vignette — sits behind the badge/headline/subheading/
+                  buttons only, darkest in the centre, fading to transparent so the
+                  planets and nebula stay bright around the edges. */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute left-1/2 top-0 h-[540px] w-[1100px] max-w-none -translate-x-1/2"
+                style={{
+                  background:
+                    "radial-gradient(ellipse 55% 60% at 50% 40%, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.45) 42%, rgba(0,0,0,0) 78%)",
+                }}
+              />
+
+              <div className="relative mx-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-medium text-zinc-300 backdrop-blur-md">
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -102,7 +126,7 @@ export default function Home() {
                 Trusted by investors across crypto, stocks &amp; banking
               </div>
 
-              <h1 className="mx-auto mt-3 max-w-3xl text-4xl font-semibold leading-tight tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
+              <h1 className="relative mx-auto mt-3 max-w-3xl text-4xl font-semibold leading-tight tracking-tight text-zinc-50 [text-shadow:0_2px_12px_rgba(0,0,0,0.45)] sm:text-5xl lg:text-6xl">
                 Everything you own.
                 <br />
                 <span className="bg-gradient-to-r from-accent-from to-accent-to bg-clip-text text-transparent">
@@ -110,13 +134,13 @@ export default function Home() {
                 </span>
               </h1>
 
-              <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-zinc-400 sm:text-lg">
+              <p className="relative mx-auto mt-3 max-w-2xl text-base leading-relaxed text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.4)] sm:text-lg">
                 Track your crypto, stocks, bank accounts and investments in
                 one beautiful place — powered by AI that understands your
                 money.
               </p>
 
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
+              <div className="relative mt-4 flex flex-wrap items-center justify-center gap-4">
                 <Link
                   href="/dashboard"
                   className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-accent-from to-accent-to px-6 py-3 text-sm font-semibold text-zinc-950 shadow-[0_0_30px_var(--accent-glow)] transition-transform duration-300 ease-out hover:scale-[1.03]"
@@ -148,7 +172,7 @@ export default function Home() {
                 </button>
               </div>
 
-              <div className="mt-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-zinc-500">
+              <div className="relative mt-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white">
                 {TRUST_ITEMS.map((item) => (
                   <span key={item.label} className="flex items-center gap-1.5">
                     <svg
@@ -170,7 +194,7 @@ export default function Home() {
               <HeroDashboardStack />
 
               <div className="mt-1">
-                <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+                <p className="text-xs font-medium uppercase tracking-wide text-white">
                   Connects with the accounts you already use
                 </p>
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
@@ -192,6 +216,8 @@ export default function Home() {
               </div>
         </section>
       </main>
+
+      <ConnectedSection />
     </div>
   );
 }

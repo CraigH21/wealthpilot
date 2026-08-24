@@ -8,6 +8,10 @@ type PortfolioCardProps = {
   name: string;
   symbol: string;
   logoSymbol: string | null;
+  /** A fully-formed logo URL — takes priority over `logoSymbol`. Needed for
+   * crypto, which resolves against CoinMarketCap's logo CDN rather than the
+   * stock-logo one `logoSymbol` builds against. */
+  logoUrl?: string | null;
   value: string;
   change: string;
   positive: boolean;
@@ -20,6 +24,7 @@ export default function PortfolioCard({
   name,
   symbol,
   logoSymbol,
+  logoUrl: logoUrlProp,
   value,
   change,
   positive,
@@ -29,9 +34,8 @@ export default function PortfolioCard({
 }: PortfolioCardProps) {
   const { cardRef, handleMouseMove } = useEdgeGlow<HTMLDivElement>();
   const [logoFailed, setLogoFailed] = useState(false);
-  const logoUrl = logoSymbol
-    ? `https://financialmodelingprep.com/image-stock/${logoSymbol}.png`
-    : null;
+  const logoUrl =
+    logoUrlProp ?? (logoSymbol ? `https://financialmodelingprep.com/image-stock/${logoSymbol}.png` : null);
 
   return (
     <div

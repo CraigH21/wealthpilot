@@ -140,3 +140,39 @@ body {
 .glass-edge-hero {
   border-color: var(--accent-border-strong);
 }
+
+/* Idle float for the "Everything Connected" cards — each card gets a
+   staggered animation-delay so they drift out of sync with each other. */
+@keyframes card-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.card-float {
+  animation: card-float 7s ease-in-out infinite;
+}
+
+/* Ambient particles drifting behind the connection orb. */
+@keyframes particle-drift {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translate(6px, -10px);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.15;
+  }
+}
+
+.particle-drift {
+  animation: particle-drift 8s ease-in-out infinite;
+}

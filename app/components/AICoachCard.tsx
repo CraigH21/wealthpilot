@@ -1,36 +1,28 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import EdgeGlow from "./EdgeGlow";
 import { useEdgeGlow } from "../hooks/useEdgeGlow";
 
-export type AICoachData = {
+export type AICoachCardProps = {
   healthScore: number;
   healthStatus: string;
   mainInsight: string;
   recommendation: string;
-};
-
-const MOCK_COACH_DATA: AICoachData = {
-  healthScore: 82,
-  healthStatus: "Good",
-  mainInsight:
-    "Your portfolio has grown 3.2% this month, outperforming the market average.",
-  recommendation:
-    "Consider diversifying further into AI stocks, which are showing strong momentum.",
-};
-
-type AICoachCardProps = Partial<AICoachData> & {
+  riskAlert: string | null;
   onAskAI?: () => void;
 };
 
 export default function AICoachCard({
-  healthScore = MOCK_COACH_DATA.healthScore,
-  healthStatus = MOCK_COACH_DATA.healthStatus,
-  mainInsight = MOCK_COACH_DATA.mainInsight,
-  recommendation = MOCK_COACH_DATA.recommendation,
+  healthScore,
+  healthStatus,
+  mainInsight,
+  recommendation,
+  riskAlert,
   onAskAI,
 }: AICoachCardProps) {
   const { cardRef, handleMouseMove } = useEdgeGlow<HTMLElement>();
+  const router = useRouter();
 
   return (
     <section
@@ -83,16 +75,30 @@ export default function AICoachCard({
       </div>
 
       {/* Recommendation */}
-      <div className="mt-3 flex flex-1 flex-col justify-center rounded-xl border border-white/10 bg-white/5 p-4">
+      <div
+        className={`mt-3 flex flex-col rounded-xl border border-white/10 bg-white/5 p-4 ${
+          riskAlert ? "" : "flex-1 justify-center"
+        }`}
+      >
         <p className="text-xs font-medium text-zinc-500">Recommendation</p>
         <p className="mt-1.5 text-sm leading-relaxed text-zinc-300">
           {recommendation}
         </p>
       </div>
 
+      {/* Risk Alert */}
+      {riskAlert && (
+        <div className="mt-3 flex flex-1 flex-col justify-center rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+          <p className="text-xs font-medium text-amber-400">Risk Alert</p>
+          <p className="mt-1.5 text-sm leading-relaxed text-zinc-300">
+            {riskAlert}
+          </p>
+        </div>
+      )}
+
       <button
         type="button"
-        onClick={onAskAI}
+        onClick={onAskAI ?? (() => router.push("/dashboard/ai-coach"))}
         className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent-soft px-4 py-2.5 text-sm font-medium text-accent shadow-[0_0_16px_var(--accent-glow)] transition-all duration-300 ease-out hover:bg-accent-border"
       >
         Ask AI

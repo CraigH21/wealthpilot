@@ -1,8 +1,13 @@
-import TodaysSnapshot from "./TodaysSnapshot";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import TodaysSnapshot, { type SnapshotData } from "./TodaysSnapshot";
 
 const NAV_ITEMS = [
   {
     label: "Overview",
+    href: "/dashboard",
     icon: (
       <>
         <rect x="3" y="3" width="7" height="7" rx="1.5" />
@@ -13,7 +18,18 @@ const NAV_ITEMS = [
     ),
   },
   {
+    label: "Portfolio",
+    href: "#",
+    icon: (
+      <>
+        <path d="M21.21 15.89A10 10 0 118 2.83" />
+        <path d="M22 12A10 10 0 0012 2v10z" />
+      </>
+    ),
+  },
+  {
     label: "Crypto",
+    href: "/dashboard/crypto",
     icon: (
       <>
         <circle cx="12" cy="12" r="8" />
@@ -23,6 +39,7 @@ const NAV_ITEMS = [
   },
   {
     label: "Stocks",
+    href: "#",
     icon: (
       <>
         <rect x="4" y="14" width="3" height="6" />
@@ -33,6 +50,7 @@ const NAV_ITEMS = [
   },
   {
     label: "Banks",
+    href: "#",
     icon: (
       <>
         <path d="M4 10l8-5 8 5" />
@@ -43,6 +61,7 @@ const NAV_ITEMS = [
   },
   {
     label: "Goals",
+    href: "#",
     icon: (
       <>
         <circle cx="12" cy="12" r="8" />
@@ -53,20 +72,30 @@ const NAV_ITEMS = [
   },
   {
     label: "AI Coach",
+    href: "/dashboard/ai-coach",
     icon: <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z" />,
   },
 ];
 
-export default function SidebarNav() {
+export default function SidebarNav({ snapshot }: { snapshot: SnapshotData }) {
+  const pathname = usePathname();
+  const isCryptoPage = pathname === "/dashboard/crypto";
+
+  // The crypto page has a page title + subtitle + Add Wallet bar above its
+  // first card, pushing that card's top edge down further than on the other
+  // dashboard pages — nudge the nav down to match, specific to this one
+  // route so it doesn't shift alignment on /dashboard or /dashboard/ai-coach.
+  const topOffset = isCryptoPage ? "mt-[160px]" : "";
+
   return (
-    <div className="flex h-full flex-col gap-6">
+    <div className={`flex h-full flex-col gap-6 ${topOffset}`}>
       <nav className="flex flex-col gap-1">
-        {NAV_ITEMS.map((item, index) => {
-          const active = index === 0;
+        {NAV_ITEMS.map((item) => {
+          const active = item.href !== "#" && pathname === item.href;
           return (
-            <a
+            <Link
               key={item.label}
-              href="#"
+              href={item.href}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-300 ease-out ${
                 active
                   ? "bg-accent-soft text-accent"
@@ -85,14 +114,16 @@ export default function SidebarNav() {
                 {item.icon}
               </svg>
               {item.label}
-            </a>
+            </Link>
           );
         })}
       </nav>
 
-      <div className="mt-auto">
-        <TodaysSnapshot />
-      </div>
+      {!isCryptoPage && (
+        <div className="mt-auto">
+          <TodaysSnapshot {...snapshot} />
+        </div>
+      )}
     </div>
   );
 }

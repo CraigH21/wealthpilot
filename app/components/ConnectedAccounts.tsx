@@ -1,12 +1,6 @@
-const ACCOUNTS = [
-  { name: "Trading 212", logo: "/icons/platforms/trading212.png" },
-  { name: "Coinbase Wallet", logo: "/icons/platforms/coinbase.png" },
-  { name: "Kraken", logo: "/icons/platforms/kraken.png" },
-  { name: "Barclays", logo: "/icons/platforms/barclays.png" },
-  { name: "Cash ISA", initials: "$", accent: "bg-zinc-500/10 text-zinc-300" },
-];
+import type { ConnectedAccount } from "../lib/mock/portfolioContext";
 
-export default function ConnectedAccounts() {
+export default function ConnectedAccounts({ accounts }: { accounts: ConnectedAccount[] }) {
   return (
     <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -24,14 +18,14 @@ export default function ConnectedAccounts() {
         </svg>
         <p className="text-sm font-medium text-zinc-50">Connected Accounts</p>
         <span className="rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">
-          {ACCOUNTS.length} Connected
+          {accounts.length} Connected
         </span>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        {ACCOUNTS.map((account) => (
+        {accounts.map((account) => (
           <div
-            key={account.name}
+            key={account.id}
             className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1.5 pl-1.5 pr-3 text-xs font-medium text-zinc-300"
           >
             {account.logo ? (
@@ -42,10 +36,8 @@ export default function ConnectedAccounts() {
                 className="h-5 w-5 rounded-full bg-white/10 object-cover"
               />
             ) : (
-              <span
-                className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold ${account.accent}`}
-              >
-                {account.initials}
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-zinc-500/10 text-[10px] font-semibold text-zinc-300">
+                {account.name[0]}
               </span>
             )}
             {account.name}

@@ -377,11 +377,11 @@ const CARDS = [
 ];
 
 const SLOTS = [
-  { x: -680, rotate: -14, scale: 0.31, z: 10, opacity: 0.8 },
-  { x: -430, rotate: -8, scale: 0.4, z: 20, opacity: 0.95 },
-  { x: 0, rotate: 0, scale: 0.74, z: 50, opacity: 1 },
-  { x: 430, rotate: 8, scale: 0.4, z: 20, opacity: 0.95 },
-  { x: 680, rotate: 14, scale: 0.31, z: 10, opacity: 0.8 },
+  { x: -480, rotate: -14, tiltY: 26, scale: 0.55, z: 10, opacity: 0.85 },
+  { x: -300, rotate: -8, tiltY: 16, scale: 0.65, z: 20, opacity: 0.85 },
+  { x: 0, rotate: 0, tiltY: 0, scale: 0.78, z: 50, opacity: 1 },
+  { x: 300, rotate: 8, tiltY: -16, scale: 0.65, z: 20, opacity: 0.85 },
+  { x: 480, rotate: 14, tiltY: -26, scale: 0.55, z: 10, opacity: 0.85 },
 ];
 
 function sleep(ms: number) {
@@ -452,20 +452,24 @@ export default function HeroDashboardStack() {
           type="button"
           aria-label="Previous"
           onClick={() => goTo((activeRef.current + 4) % 5)}
-          className="absolute left-0 top-1/2 z-[60] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/5 text-zinc-300 backdrop-blur-md transition-colors duration-300 ease-out hover:border-accent-border hover:bg-accent-soft hover:text-accent"
+          className="absolute left-0 top-1/2 z-[60] flex h-[60px] w-[60px] -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/10 text-zinc-300 shadow-[0_4px_10px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-2px_4px_rgba(0,0,0,0.35)] backdrop-blur-md transition-all duration-150 ease-out hover:border-accent-border hover:bg-accent-soft hover:text-accent active:scale-90 active:border-accent-border active:bg-accent-soft active:text-accent active:shadow-[0_0_18px_var(--accent-glow),inset_0_2px_6px_rgba(0,0,0,0.6)]"
         >
-          <ChevronIcon direction="left" />
+          <span className="[&>svg]:h-6 [&>svg]:w-6">
+            <ChevronIcon direction="left" />
+          </span>
         </button>
         <button
           type="button"
           aria-label="Next"
           onClick={() => goTo((activeRef.current + 1) % 5)}
-          className="absolute right-0 top-1/2 z-[60] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/5 text-zinc-300 backdrop-blur-md transition-colors duration-300 ease-out hover:border-accent-border hover:bg-accent-soft hover:text-accent"
+          className="absolute right-0 top-1/2 z-[60] flex h-[60px] w-[60px] -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/10 text-zinc-300 shadow-[0_4px_10px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-2px_4px_rgba(0,0,0,0.35)] backdrop-blur-md transition-all duration-150 ease-out hover:border-accent-border hover:bg-accent-soft hover:text-accent active:scale-90 active:border-accent-border active:bg-accent-soft active:text-accent active:shadow-[0_0_18px_var(--accent-glow),inset_0_2px_6px_rgba(0,0,0,0.6)]"
         >
-          <ChevronIcon direction="right" />
+          <span className="[&>svg]:h-6 [&>svg]:w-6">
+            <ChevronIcon direction="right" />
+          </span>
         </button>
 
-        <div className="relative h-[380px]">
+        <div className="relative h-[380px] [perspective:1600px]">
           {/* reflective floor beneath the cards */}
           <div
             aria-hidden
@@ -499,7 +503,7 @@ export default function HeroDashboardStack() {
                 key={card.label}
                 className="absolute left-1/2 bottom-10 w-[600px] origin-bottom"
                 style={{
-                  transform: `translate(calc(-50% + ${slot.x}px), 0) rotate(${slot.rotate}deg) scale(${slot.scale})`,
+                  transform: `translate(calc(-50% + ${slot.x}px), 0) rotateY(${slot.tiltY}deg) rotate(${slot.rotate}deg) scale(${slot.scale})`,
                   zIndex: slot.z,
                   opacity,
                   transitionProperty: isWrapping ? "opacity" : "transform, opacity",
@@ -512,20 +516,44 @@ export default function HeroDashboardStack() {
                   className="rounded-3xl p-[1.5px]"
                   style={{
                     background: isFocused
-                      ? "linear-gradient(135deg, rgba(255,255,255,0.9), var(--accent) 55%, var(--accent-strong) 100%)"
+                      ? "linear-gradient(135deg, rgba(255,255,255,0.9), var(--accent) 55%, var(--accent-strong) 85%, rgba(255,255,255,0.9) 100%)"
                       : "linear-gradient(135deg, rgba(255,255,255,0.55), var(--accent) 60%, var(--accent-strong) 100%)",
                   }}
                 >
                   <div
                     className={`glass-edge-card !border-0 rounded-[22px] p-4 backdrop-blur-[32px] ${
                       isFocused
-                        ? "!bg-[#050706] shadow-[0_0_30px_rgba(255,255,255,0.15),0_0_60px_var(--accent-glow),0_30px_80px_rgba(0,0,0,0.65),inset_3px_3px_14px_rgba(255,255,255,0.18),inset_-6px_-6px_28px_var(--accent-glow)]"
-                        : "!bg-[#050706] shadow-[0_0_18px_rgba(255,255,255,0.1),0_0_40px_var(--accent-glow),0_20px_50px_rgba(0,0,0,0.6),inset_2px_2px_10px_rgba(255,255,255,0.1),inset_-5px_-5px_20px_var(--accent-glow)]"
+                        ? "!bg-[#050706] shadow-[0_0_43px_rgba(255,255,255,0.2),0_0_85px_var(--accent-glow),0_30px_80px_rgba(0,0,0,0.65),inset_2px_2px_10px_rgba(255,255,255,0.18),inset_-5px_-5px_28px_var(--accent-glow)]"
+                        : "!bg-[#050706] shadow-[0_0_18px_rgba(255,255,255,0.1),0_0_40px_var(--accent-glow),0_40px_90px_rgba(0,0,0,0.45),inset_2px_2px_10px_rgba(255,255,255,0.1),inset_-5px_-5px_20px_var(--accent-glow)]"
                     }`}
                   >
                     <Content />
                   </div>
                 </div>
+
+                {isFocused && (
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute left-0 right-0 top-full origin-top"
+                    style={{
+                      transform: "scaleY(-1)",
+                      opacity: 0.08,
+                      filter: "blur(26px)",
+                      maskImage: "linear-gradient(to bottom, black, transparent 60%)",
+                      WebkitMaskImage: "linear-gradient(to bottom, black, transparent 60%)",
+                    }}
+                  >
+                    <div
+                      className="rounded-3xl p-[1.5px]"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, rgba(255,255,255,0.9), var(--accent) 55%, var(--accent-strong) 100%)",
+                      }}
+                    >
+                      <div className="glass-edge-card !border-0 !bg-[#050706] h-[320px] rounded-[22px]" />
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
