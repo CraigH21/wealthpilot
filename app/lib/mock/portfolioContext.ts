@@ -18,6 +18,10 @@ export type ConnectedAccount = {
   logo?: string;
   /** Blockchains this account operates on — only meaningful for crypto wallets. */
   networks?: string[];
+  /** Annual equivalent rate — bank accounts only. */
+  interestRateAER?: number;
+  /** e.g. "Current Account", "Savings Account" — bank accounts only. */
+  accountType?: string;
 };
 
 /** Category-level allocation bucket — what the Asset Allocation donut and
@@ -46,8 +50,12 @@ export type Security = {
   value: number;
   changePct: number;
   color: string;
-  /** Cost basis per unit — only populated for crypto holdings so far. */
+  /** Cost basis per unit. */
   avgBuyPriceGBP?: number;
+  /** Per-unit price. Crypto derives this live at request time instead;
+   * stocks/ETFs store it since there's no per-holding live fetch (Alpha
+   * Vantage's free tier is far too rate-limited for that). */
+  currentPriceGBP?: number;
   /** CoinMarketCap's numeric coin id — real logo artwork, not a lookup by
    * name/symbol against a different CDN. Crypto only. */
   cmcId?: number;
@@ -60,6 +68,7 @@ export type Goal = {
   currentAmount: number;
   monthlyContribution: number;
   targetDate: string;
+  priority: "Low" | "Medium" | "High";
   /** Free-text phrases that mean "the user is talking about this goal". */
   keywords: string[];
 };
@@ -162,28 +171,28 @@ const sumCryptoBySymbol = (symbol: string) =>
   CRYPTO_ALLOCATIONS.filter((row) => row.symbol === symbol).reduce((sum, row) => sum + row.value, 0);
 
 const ACCOUNTS: ConnectedAccount[] = [
-  { id: "barclays-current", name: "Barclays Current Account", provider: "barclays", category: "bank", balance: 2140, status: "connected", logo: "/icons/platforms/barclays.png" },
-  { id: "barclays-savings", name: "Barclays Savings Account", provider: "barclays", category: "bank", balance: 3500, status: "connected", logo: "/icons/platforms/barclays.png" },
-  { id: "monzo-current", name: "Monzo Current Account", provider: "monzo", category: "bank", balance: 860, status: "connected", logo: "/icons/platforms/monzo.png" },
-  { id: "monzo-savings", name: "Monzo Savings Pot", provider: "monzo", category: "bank", balance: 3500, status: "connected", logo: "/icons/platforms/monzo.png" },
+  { id: "barclays-current", name: "Barclays Current Account", provider: "barclays", category: "bank", balance: 2140, status: "connected", logo: "/icons/platforms/barclays.png", interestRateAER: 1.25, accountType: "Current Account" },
+  { id: "barclays-savings", name: "Barclays Savings Account", provider: "barclays", category: "bank", balance: 3500, status: "connected", logo: "/icons/platforms/barclays.png", interestRateAER: 4.1, accountType: "Savings Account" },
+  { id: "monzo-current", name: "Monzo Current Account", provider: "monzo", category: "bank", balance: 860, status: "connected", logo: "/icons/platforms/monzo.png", interestRateAER: 0.5, accountType: "Current Account" },
+  { id: "monzo-savings", name: "Monzo Savings Pot", provider: "monzo", category: "bank", balance: 3500, status: "connected", logo: "/icons/platforms/monzo.png", interestRateAER: 3.85, accountType: "Savings Pot" },
   { id: "trading212-isa", name: "Trading 212 Stocks & Shares ISA", provider: "trading212", category: "broker", balance: 58000, status: "connected", logo: "/icons/platforms/trading212.png" },
   { id: "trading212-gia", name: "Trading 212 Invest", provider: "trading212", category: "broker", balance: 9400, status: "connected", logo: "/icons/platforms/trading212.png" },
   { id: "metamask", name: "MetaMask", provider: "metamask", category: "crypto", balance: sumCryptoByAccount("metamask"), status: "connected", logo: "/icons/platforms/metamask.png", networks: getNetworksForAccount("metamask") },
   { id: "ledger", name: "Ledger", provider: "ledger", category: "crypto", balance: sumCryptoByAccount("ledger"), status: "connected", logo: "/icons/platforms/ledger.svg", networks: getNetworksForAccount("ledger") },
-  { id: "rabby-wallet", name: "Rabby Wallet", provider: "rabby", category: "crypto", balance: sumCryptoByAccount("rabby-wallet"), status: "connected", networks: getNetworksForAccount("rabby-wallet") },
+  { id: "rabby-wallet", name: "Rabby Wallet", provider: "rabby", category: "crypto", balance: sumCryptoByAccount("rabby-wallet"), status: "connected", logo: "/icons/platforms/rabby.svg", networks: getNetworksForAccount("rabby-wallet") },
   { id: "coinbase", name: "Coinbase", provider: "coinbase", category: "crypto", balance: sumCryptoByAccount("coinbase"), status: "connected", logo: "/icons/platforms/coinbase.png", networks: getNetworksForAccount("coinbase") },
   { id: "kraken", name: "Kraken", provider: "kraken", category: "crypto", balance: sumCryptoByAccount("kraken"), status: "connected", logo: "/icons/platforms/kraken.png", networks: getNetworksForAccount("kraken") },
-  { id: "aviva-pension", name: "Aviva Workplace Pension", provider: "aviva", category: "pension", balance: 62000, status: "connected" },
-  { id: "paypal", name: "PayPal", provider: "paypal", category: "payments", balance: 180, status: "syncing" },
+  { id: "aviva-pension", name: "Aviva Workplace Pension", provider: "aviva", category: "pension", balance: 62000, status: "connected", logo: "/icons/platforms/aviva.svg" },
+  { id: "paypal", name: "PayPal", provider: "paypal", category: "payments", balance: 180, status: "syncing", logo: "/icons/platforms/paypal.svg" },
 ];
 
 const SECURITIES: Security[] = [
-  { id: "vusa", name: "Vanguard S&P 500 ETF", symbol: "VUSA", logoSymbol: null, category: "ETFs", accountId: "trading212-isa", value: 22000, changePct: 2.1, color: "var(--accent)" },
-  { id: "vwrp", name: "Vanguard FTSE All-World ETF", symbol: "VWRP", logoSymbol: null, category: "ETFs", accountId: "trading212-isa", value: 15000, changePct: 1.8, color: "#38bdf8" },
-  { id: "aapl", name: "Apple", symbol: "AAPL", logoSymbol: "AAPL", category: "Stocks", accountId: "trading212-isa", value: 8500, changePct: 3.4, color: "#a1a1aa" },
-  { id: "msft", name: "Microsoft", symbol: "MSFT", logoSymbol: "MSFT", category: "Stocks", accountId: "trading212-isa", value: 7400, changePct: 2.9, color: "#7aaa6c" },
-  { id: "isf", name: "iShares Core FTSE 100 ETF", symbol: "ISF", logoSymbol: null, category: "ETFs", accountId: "trading212-isa", value: 5100, changePct: 1.2, color: "#c084fc" },
-  { id: "nvda", name: "Nvidia", symbol: "NVDA", logoSymbol: "NVDA", category: "Stocks", accountId: "trading212-gia", value: 9400, changePct: 6.8, color: "#78ba00" },
+  { id: "vusa", name: "Vanguard S&P 500 ETF", symbol: "VUSA", logoSymbol: null, category: "ETFs", accountId: "trading212-isa", value: 22000, changePct: 2.1, color: "var(--accent)", avgBuyPriceGBP: 78, currentPriceGBP: 95 },
+  { id: "vwrp", name: "Vanguard FTSE All-World ETF", symbol: "VWRP", logoSymbol: null, category: "ETFs", accountId: "trading212-isa", value: 15000, changePct: 1.8, color: "#38bdf8", avgBuyPriceGBP: 98, currentPriceGBP: 118 },
+  { id: "aapl", name: "Apple", symbol: "AAPL", logoSymbol: "AAPL", category: "Stocks", accountId: "trading212-isa", value: 8500, changePct: 3.4, color: "#a1a1aa", avgBuyPriceGBP: 210, currentPriceGBP: 248 },
+  { id: "msft", name: "Microsoft", symbol: "MSFT", logoSymbol: "MSFT", category: "Stocks", accountId: "trading212-isa", value: 7400, changePct: 2.9, color: "#7aaa6c", avgBuyPriceGBP: 340, currentPriceGBP: 380 },
+  { id: "isf", name: "iShares Core FTSE 100 ETF", symbol: "ISF", logoSymbol: null, category: "ETFs", accountId: "trading212-isa", value: 5100, changePct: 1.2, color: "#c084fc", avgBuyPriceGBP: 7.6, currentPriceGBP: 8.2 },
+  { id: "nvda", name: "Nvidia", symbol: "NVDA", logoSymbol: "NVDA", category: "Stocks", accountId: "trading212-gia", value: 9400, changePct: 6.8, color: "#78ba00", avgBuyPriceGBP: 115, currentPriceGBP: 145 },
   ...Object.entries(CRYPTO_COIN_INFO).map(([symbol, info]) => ({
     id: symbol.toLowerCase(),
     name: info.name,
@@ -202,10 +211,12 @@ const SECURITIES: Security[] = [
 ];
 
 const GOALS: Goal[] = [
-  { id: "emergency-fund", name: "Emergency Fund", targetAmount: 10000, currentAmount: 7000, monthlyContribution: 100, targetDate: "2027-06-01", keywords: ["emergency"] },
-  { id: "house-deposit", name: "House Deposit", targetAmount: 40000, currentAmount: 18500, monthlyContribution: 400, targetDate: "2029-01-01", keywords: ["house", "deposit", "mortgage"] },
-  { id: "new-car", name: "New Car", targetAmount: 12000, currentAmount: 4200, monthlyContribution: 150, targetDate: "2027-12-01", keywords: ["car", "vehicle"] },
-  { id: "wedding-fund", name: "Wedding Fund", targetAmount: 15000, currentAmount: 6000, monthlyContribution: 250, targetDate: "2028-03-01", keywords: ["wedding", "marriage"] },
+  { id: "emergency-fund", name: "Emergency Fund", targetAmount: 10000, currentAmount: 7000, monthlyContribution: 300, targetDate: "2027-07-01", priority: "High", keywords: ["emergency"] },
+  { id: "house-deposit", name: "House Deposit", targetAmount: 40000, currentAmount: 18200, monthlyContribution: 400, targetDate: "2031-03-01", priority: "High", keywords: ["house", "deposit", "mortgage"] },
+  { id: "holiday-fund", name: "Holiday Fund", targetAmount: 3000, currentAmount: 1240, monthlyContribution: 200, targetDate: "2027-08-01", priority: "Medium", keywords: ["holiday", "trip", "travel", "vacation"] },
+  { id: "new-car", name: "New Car", targetAmount: 12000, currentAmount: 3500, monthlyContribution: 250, targetDate: "2029-06-01", priority: "Medium", keywords: ["car", "vehicle"] },
+  { id: "retirement", name: "Retirement", targetAmount: 250000, currentAmount: 42000, monthlyContribution: 300, targetDate: "2045-01-01", priority: "High", keywords: ["retirement", "retire", "pension"] },
+  { id: "christmas-fund", name: "Christmas Fund", targetAmount: 800, currentAmount: 220, monthlyContribution: 60, targetDate: "2026-12-01", priority: "Low", keywords: ["christmas", "xmas", "holidays"] },
 ];
 
 // --- Transactions: fixed recurring items applied across 3 months, plus a
@@ -318,6 +329,54 @@ const TRANSACTIONS: Transaction[] = [
   ...buildMonthTransactions("2026-06", JUNE_VARIABLE),
 ].sort((a, b) => b.date.localeCompare(a.date));
 
+/**
+ * Accounts/transactions added at runtime through the "Add Account" flow
+ * (see `accountConnection.ts`). Kept separate from the hand-authored
+ * `ACCOUNTS`/`TRANSACTIONS` above rather than pushed into them directly, so
+ * it's obvious which data is Peter Williams' original demo dataset and
+ * which was generated live. Every reader in this file goes through
+ * `getAllAccounts`/`getAllTransactions` instead of the raw arrays, so a
+ * newly connected account shows up everywhere without each call site
+ * needing to know about this list. In-memory only — resets on server
+ * restart, same lifetime as the rest of this mock module.
+ */
+const RUNTIME_ACCOUNTS: ConnectedAccount[] = [];
+const RUNTIME_TRANSACTIONS: Transaction[] = [];
+const RUNTIME_GOALS: Goal[] = [];
+
+// Accounts removed via the account details panel — tracked as an exclusion
+// set rather than spliced out of the arrays above, so removal works
+// uniformly on both the hand-authored demo accounts and ones added at
+// runtime, without mutating either source array in place.
+const REMOVED_ACCOUNT_IDS = new Set<string>();
+
+export function addConnectedAccount(accounts: ConnectedAccount[], transactions: Transaction[]): void {
+  RUNTIME_ACCOUNTS.push(...accounts);
+  RUNTIME_TRANSACTIONS.push(...transactions);
+}
+
+export function removeConnectedAccount(accountId: string): void {
+  REMOVED_ACCOUNT_IDS.add(accountId);
+}
+
+export function addGoal(goal: Goal): void {
+  RUNTIME_GOALS.push(goal);
+}
+
+function getAllAccounts(): ConnectedAccount[] {
+  return [...ACCOUNTS, ...RUNTIME_ACCOUNTS].filter((account) => !REMOVED_ACCOUNT_IDS.has(account.id));
+}
+
+function getAllGoals(): Goal[] {
+  return [...GOALS, ...RUNTIME_GOALS];
+}
+
+function getAllTransactions(): Transaction[] {
+  return [...TRANSACTIONS, ...RUNTIME_TRANSACTIONS]
+    .filter((transaction) => !REMOVED_ACCOUNT_IDS.has(transaction.accountId))
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
 const NET_WORTH_HISTORY: NetWorthPoint[] = [
   { date: "2026-03-01", value: 158900 },
   { date: "2026-04-01", value: 163400 },
@@ -326,6 +385,54 @@ const NET_WORTH_HISTORY: NetWorthPoint[] = [
   { date: "2026-07-01", value: 176500 },
   { date: "2026-08-01", value: 183280 },
 ];
+
+/**
+ * Turns a handful of monthly anchor points into one point per real calendar
+ * day — linearly interpolating between consecutive anchors and layering a
+ * small deterministic (seeded, not `Math.random`, so it's stable across
+ * reloads) daily wobble so the line doesn't look like straight ramps between
+ * six dots. Anchor dates always keep their exact anchor value, so nothing
+ * that reconciles against them (e.g. a category's real current total as the
+ * last point) can drift.
+ *
+ * This is the seam for real data: `PortfolioGraph` already reads whatever
+ * per-day granularity it's given (see `deriveRangeData`), so once a real
+ * account feed provides daily balances, swapping the call site that invokes
+ * this generator for a live query is the only change needed — the chart
+ * itself doesn't need touching.
+ */
+function expandToDaily(anchors: NetWorthPoint[], volatility = 1): NetWorthPoint[] {
+  const out: NetWorthPoint[] = [];
+
+  for (let i = 0; i < anchors.length - 1; i++) {
+    const start = anchors[i];
+    const end = anchors[i + 1];
+    const startDate = new Date(start.date);
+    const totalDays = Math.round(
+      (new Date(end.date).getTime() - startDate.getTime()) / 86_400_000
+    );
+    const totalMove = end.value - start.value;
+    const amplitude = Math.max(Math.abs(totalMove) * 0.04, 150) * volatility;
+
+    for (let d = 0; d < totalDays; d++) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + d);
+      const trend = start.value + totalMove * (d / totalDays);
+
+      // Deterministic hash-noise (not `Math.random`) seeded by the absolute
+      // day index, so the same date always gets the same wobble.
+      const seed = Math.floor(date.getTime() / 86_400_000);
+      const raw = Math.sin(seed * 12.9898) * 43758.5453;
+      const noise = raw - Math.floor(raw); // in [0, 1)
+      const wobble = d === 0 ? 0 : (noise - 0.5) * amplitude;
+
+      out.push({ date: date.toISOString().slice(0, 10), value: Math.round(trend + wobble) });
+    }
+  }
+
+  out.push(anchors[anchors.length - 1]); // exact final anchor, untouched
+  return out;
+}
 
 function computeMonthTotals(transactions: Transaction[], monthPrefix: string) {
   const monthTx = transactions.filter((t) => t.date.startsWith(monthPrefix));
@@ -412,34 +519,115 @@ export function getCryptoAllocations(): CryptoAllocationDetail[] {
  * always matches the real current crypto total. */
 export function getCryptoValueHistory(): NetWorthPoint[] {
   const currentTotal = Object.keys(CRYPTO_COIN_INFO).reduce((sum, symbol) => sum + sumCryptoBySymbol(symbol), 0);
-  return [
-    { date: "2026-03-01", value: 31000 },
-    { date: "2026-04-01", value: 35200 },
-    { date: "2026-05-01", value: 29800 },
-    { date: "2026-06-01", value: 38100 },
-    { date: "2026-07-01", value: 40900 },
-    { date: "2026-08-01", value: currentTotal },
-  ];
+  return expandToDaily(
+    [
+      { date: "2026-03-01", value: 31000 },
+      { date: "2026-04-01", value: 35200 },
+      { date: "2026-05-01", value: 29800 },
+      { date: "2026-06-01", value: 38100 },
+      { date: "2026-07-01", value: 40900 },
+      { date: "2026-08-01", value: currentTotal },
+    ],
+    1.6 // crypto is the volatile slice — wider day-to-day swings
+  );
+}
+
+/** Six-month value trend for stocks + ETFs only — no May dip, since that
+ * dip in the overall net worth history was driven by crypto's volatility,
+ * not by these holdings. */
+export function getStockValueHistory(): NetWorthPoint[] {
+  const currentTotal = SECURITIES.filter((s) => s.category === "Stocks" || s.category === "ETFs").reduce(
+    (sum, s) => sum + s.value,
+    0
+  );
+  return expandToDaily(
+    [
+      { date: "2026-03-01", value: 58500 },
+      { date: "2026-04-01", value: 60200 },
+      { date: "2026-05-01", value: 61800 },
+      { date: "2026-06-01", value: 63400 },
+      { date: "2026-07-01", value: 65600 },
+      { date: "2026-08-01", value: currentTotal },
+    ],
+    0.6 // steadier than crypto, but still real market movement
+  );
+}
+
+/** Six-month value trend for bank accounts only (current + savings, not
+ * PayPal) — same shape as `netWorthHistory`, reusable directly by
+ * `PortfolioGraph`. Low, steady drift rather than crypto/stocks-style
+ * volatility, since it's just balances — the last point is the real current
+ * total so it always reconciles with the connected bank account cards. */
+export function getCashValueHistory(): NetWorthPoint[] {
+  const currentTotal = getAllAccounts().filter((a) => a.category === "bank").reduce((sum, a) => sum + a.balance, 0);
+  return expandToDaily(
+    [
+      { date: "2026-03-01", value: 8400 },
+      { date: "2026-04-01", value: 8900 },
+      { date: "2026-05-01", value: 8100 },
+      { date: "2026-06-01", value: 9300 },
+      { date: "2026-07-01", value: 9700 },
+      { date: "2026-08-01", value: currentTotal },
+    ],
+    0.15 // just balances drifting — low, steady, not volatile
+  );
+}
+
+/** Six-month value trend for total saved-toward-goals — same shape as
+ * `netWorthHistory`, reusable directly by `PortfolioGraph`. The last point
+ * is the real current total across all goals, so it always reconciles with
+ * the goal cards. */
+export function getGoalsValueHistory(): NetWorthPoint[] {
+  const currentTotal = getAllGoals().reduce((sum, g) => sum + g.currentAmount, 0);
+  return expandToDaily(
+    [
+      { date: "2026-03-01", value: 58000 },
+      { date: "2026-04-01", value: 61500 },
+      { date: "2026-05-01", value: 64200 },
+      { date: "2026-06-01", value: 66800 },
+      { date: "2026-07-01", value: 69400 },
+      { date: "2026-08-01", value: currentTotal },
+    ],
+    0.2 // goal contributions are steady, not market-driven
+  );
 }
 
 export function getPortfolioContext(): PortfolioContext {
-  const cash = ACCOUNTS.filter((a) => a.category === "bank" || a.category === "payments").reduce(
+  const allAccounts = getAllAccounts();
+  const allTransactions = getAllTransactions();
+
+  const cash = allAccounts.filter((a) => a.category === "bank" || a.category === "payments").reduce(
     (sum, a) => sum + a.balance,
     0
   );
-  const pension = ACCOUNTS.find((a) => a.category === "pension")?.balance ?? 0;
-  const netWorth = ACCOUNTS.reduce((sum, a) => sum + a.balance, 0);
+  const pension = allAccounts.find((a) => a.category === "pension")?.balance ?? 0;
+  const netWorth = allAccounts.reduce((sum, a) => sum + a.balance, 0);
 
-  const lastPoint = NET_WORTH_HISTORY[NET_WORTH_HISTORY.length - 1];
+  // The last anchor's date stays fixed, but its value tracks the live net
+  // worth — otherwise adding an account bumps the headline total without
+  // the chart's "today" point (or the %-this-month figure) agreeing with it.
   const prevPoint = NET_WORTH_HISTORY[NET_WORTH_HISTORY.length - 2];
-  const netWorthChangePct = Math.round(((lastPoint.value - prevPoint.value) / prevPoint.value) * 1000) / 10;
-  const weeklyChangeAbs = Math.round((lastPoint.value - prevPoint.value) / 4);
+  const currentAnchor: NetWorthPoint = { date: NET_WORTH_HISTORY[NET_WORTH_HISTORY.length - 1].date, value: netWorth };
+  const netWorthHistoryWithLive = [...NET_WORTH_HISTORY.slice(0, -1), currentAnchor];
+  const netWorthChangePct = Math.round(((netWorth - prevPoint.value) / prevPoint.value) * 1000) / 10;
+  const netWorthHistoryDaily = expandToDaily(netWorthHistoryWithLive);
 
-  const { income: monthlyIncome, spending: monthlySpending } = computeMonthTotals(TRANSACTIONS, "2026-07");
-  const spendingByCategory = computeSpendingByCategory(TRANSACTIONS, "2026-07");
+  // Real "since Monday 00:00" figure — looks up this week's actual Monday
+  // in the daily-interpolated series rather than the old approximation
+  // (last month's total change ÷ 4), which wasn't tied to a real week at
+  // all. `currentAnchor.date` is this dataset's fixed "today", per the
+  // comment above.
+  const mostRecentMonday = new Date(currentAnchor.date);
+  mostRecentMonday.setDate(mostRecentMonday.getDate() - ((mostRecentMonday.getDay() + 6) % 7));
+  const mondayIso = mostRecentMonday.toISOString().slice(0, 10);
+  const mondayPoint = netWorthHistoryDaily.find((point) => point.date === mondayIso);
+  const weeklyChangeAbs = Math.round(netWorth - (mondayPoint?.value ?? prevPoint.value));
+
+  const { income: monthlyIncome, spending: monthlySpending } = computeMonthTotals(allTransactions, "2026-07");
+  const spendingByCategory = computeSpendingByCategory(allTransactions, "2026-07");
 
   const holdings = buildHoldings(SECURITIES, cash, pension);
-  const emergencyFund = GOALS.find((g) => g.id === "emergency-fund");
+  const emergencyFund = getAllGoals().find((g) => g.id === "emergency-fund");
   const emergencyFundProgressPct = emergencyFund
     ? Math.round((emergencyFund.currentAmount / emergencyFund.targetAmount) * 100)
     : 0;
@@ -470,10 +658,10 @@ export function getPortfolioContext(): PortfolioContext {
     riskProfile: "Moderate",
     holdings,
     securities: SECURITIES,
-    goals: GOALS,
-    recentTransactions: TRANSACTIONS,
-    connectedAccounts: ACCOUNTS,
-    netWorthHistory: NET_WORTH_HISTORY,
+    goals: getAllGoals(),
+    recentTransactions: allTransactions,
+    connectedAccounts: allAccounts,
+    netWorthHistory: netWorthHistoryDaily,
     spendingByCategory,
   };
 }

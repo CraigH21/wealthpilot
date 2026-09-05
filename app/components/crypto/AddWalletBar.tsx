@@ -27,7 +27,7 @@ export default function AddWalletBar() {
           <path d="M12 5v14M5 12h14" />
         </svg>
       </span>
-      <span className="whitespace-nowrap text-sm font-semibold text-zinc-50">Add Wallet / Exchange</span>
+      <span className="whitespace-nowrap text-sm font-semibold text-zinc-900">Add Wallet / Exchange</span>
     </button>
   );
 }

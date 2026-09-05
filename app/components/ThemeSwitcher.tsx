@@ -52,9 +52,9 @@ export default function ThemeSwitcher() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-12 z-50 w-48 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-md"
+          className="absolute right-0 top-12 z-50 w-48 overflow-hidden rounded-2xl border border-black/10 bg-white/95 p-1.5 shadow-2xl shadow-black/20 backdrop-blur-md"
         >
-          <p className="px-3 pb-1.5 pt-1 text-xs font-medium text-zinc-500">
+          <p className="px-3 pb-1.5 pt-1 text-xs font-medium text-zinc-600">
             Appearance
           </p>
           {THEMES.map((option) => {
@@ -71,8 +71,8 @@ export default function ThemeSwitcher() {
                 }}
                 className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-300 ease-out ${
                   active
-                    ? "bg-accent-soft text-zinc-50"
-                    : "text-zinc-400 hover:bg-white/5 hover:text-zinc-50"
+                    ? "bg-accent-soft text-zinc-900"
+                    : "text-zinc-500 hover:bg-black/5 hover:text-zinc-900"
                 }`}
               >
                 <span

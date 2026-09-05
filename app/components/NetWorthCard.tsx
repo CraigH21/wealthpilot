@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import ConnectedAccounts from "./ConnectedAccounts";
 import EdgeGlow from "./EdgeGlow";
 import PortfolioGraph, { RANGES, type Range } from "./PortfolioGraph";
 import { useEdgeGlow } from "../hooks/useEdgeGlow";
-import type { ConnectedAccount, NetWorthPoint } from "../lib/mock/portfolioContext";
+import type { NetWorthPoint } from "../lib/mock/portfolioContext";
 
 const formatGBP = (value: number) =>
   new Intl.NumberFormat("en-GB", {
@@ -18,14 +17,12 @@ type NetWorthCardProps = {
   netWorth: number;
   netWorthChangePct: number;
   history: NetWorthPoint[];
-  accounts: ConnectedAccount[];
 };
 
 export default function NetWorthCard({
   netWorth,
   netWorthChangePct,
   history,
-  accounts,
 }: NetWorthCardProps) {
   const [range, setRange] = useState<Range>("1M");
   const { cardRef, handleMouseMove } = useEdgeGlow<HTMLElement>();
@@ -35,7 +32,7 @@ export default function NetWorthCard({
     <section
       ref={cardRef}
       onMouseMove={handleMouseMove}
-      className="group glass-edge-card glass-edge-hero relative flex h-full flex-col overflow-hidden rounded-3xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_4px_4px_14px_rgba(255,255,255,0.2),inset_-2px_-2px_6px_var(--accent-soft)] backdrop-blur-[32px] sm:p-10"
+      className="group glass-edge-card glass-edge-hero relative flex h-full flex-col overflow-hidden rounded-3xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_4px_4px_14px_rgba(255,255,255,0.2),inset_-2px_-2px_6px_var(--accent-soft)] backdrop-blur-[32px] transition-transform duration-300 ease-out hover:-translate-y-[3px] hover:scale-[1.01] sm:p-8"
     >
       <EdgeGlow />
 
@@ -47,10 +44,10 @@ export default function NetWorthCard({
       <div className="relative">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-sm font-medium text-zinc-400">Total Net Worth</p>
+            <p className="text-sm font-medium text-zinc-500">Total Net Worth</p>
 
             <div className="mt-3 flex flex-wrap items-end gap-4">
-              <h1 className="text-5xl font-semibold tracking-tight text-zinc-50 sm:text-6xl">
+              <h1 className="text-5xl font-semibold tracking-tight text-zinc-900 sm:text-6xl">
                 {formatGBP(netWorth)}
               </h1>
 
@@ -85,12 +82,12 @@ export default function NetWorthCard({
               </span>
             </div>
 
-            <p className="mt-2 text-sm text-zinc-500">
+            <p className="mt-2 text-sm text-zinc-600">
               Across all connected accounts
             </p>
           </div>
 
-          <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-md">
+          <div className="flex items-center gap-1 rounded-full border border-black/10 bg-black/5 p-1 backdrop-blur-md">
             {RANGES.map((option) => {
               const active = option === range;
               return (
@@ -101,7 +98,7 @@ export default function NetWorthCard({
                   className={`rounded-full px-3 py-1 text-xs font-medium ${
                     active
                       ? "bg-accent-soft text-accent shadow-[0_0_14px_var(--accent-glow)]"
-                      : "text-zinc-500"
+                      : "text-zinc-600"
                   }`}
                 >
                   {option}
@@ -110,8 +107,6 @@ export default function NetWorthCard({
             })}
           </div>
         </div>
-
-        <ConnectedAccounts accounts={accounts} />
 
         <PortfolioGraph range={range} history={history} />
       </div>

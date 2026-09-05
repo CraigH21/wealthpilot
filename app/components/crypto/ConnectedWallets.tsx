@@ -49,7 +49,7 @@ function WalletCard({
             <img
               src={account.logo}
               alt=""
-              className="h-10 w-10 shrink-0 rounded-xl bg-white/10 object-cover"
+              className="h-10 w-10 shrink-0 rounded-xl bg-black/10 object-cover"
             />
           ) : (
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-sm font-semibold text-accent">
@@ -57,7 +57,7 @@ function WalletCard({
             </span>
           )}
           <div>
-            <p className="text-sm font-medium text-zinc-50">{account.name}</p>
+            <p className="text-sm font-medium text-zinc-900">{account.name}</p>
             <span className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-accent">
               <span className="h-1.5 w-1.5 rounded-full bg-accent" />
               Connected
@@ -67,7 +67,7 @@ function WalletCard({
         <svg
           viewBox="0 0 24 24"
           fill="none"
-          className="h-4 w-4 text-zinc-500"
+          className="h-4 w-4 text-zinc-600"
           stroke="currentColor"
           strokeWidth={2}
           strokeLinecap="round"
@@ -77,8 +77,8 @@ function WalletCard({
         </svg>
       </div>
 
-      <p className="relative mt-4 text-2xl font-semibold text-zinc-50">{formatGBP(account.balance)}</p>
-      <p className="relative mt-1 text-xs text-zinc-500">
+      <p className="relative mt-4 text-2xl font-semibold text-zinc-900">{formatGBP(account.balance)}</p>
+      <p className="relative mt-1 text-xs text-zinc-600">
         Last synced {LAST_SYNCED[account.id] ?? "recently"}
       </p>
 
@@ -87,13 +87,13 @@ function WalletCard({
           {account.networks.slice(0, 2).map((network) => (
             <span
               key={network}
-              className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-medium text-zinc-400"
+              className="rounded-full border border-black/10 bg-black/5 px-2 py-0.5 text-[11px] font-medium text-zinc-500"
             >
               {network}
             </span>
           ))}
           {account.networks.length > 2 && (
-            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-medium text-zinc-400">
+            <span className="rounded-full border border-black/10 bg-black/5 px-2 py-0.5 text-[11px] font-medium text-zinc-500">
               +{account.networks.length - 2}
             </span>
           )}
@@ -135,22 +135,22 @@ function WalletHoldingsModal({
           <div className="flex items-center gap-3">
             {account.logo ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={account.logo} alt="" className="h-10 w-10 shrink-0 rounded-xl bg-white/10 object-cover" />
+              <img src={account.logo} alt="" className="h-10 w-10 shrink-0 rounded-xl bg-black/10 object-cover" />
             ) : (
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-sm font-semibold text-accent">
                 {account.name[0]}
               </span>
             )}
             <div>
-              <p className="text-sm font-semibold text-zinc-50">{account.name}</p>
-              <p className="text-xs text-zinc-500">{formatGBP(account.balance)} total</p>
+              <p className="text-sm font-semibold text-zinc-900">{account.name}</p>
+              <p className="text-xs text-zinc-600">{formatGBP(account.balance)} total</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/5 text-zinc-400 hover:text-zinc-50"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 text-zinc-500 hover:text-zinc-900"
           >
             <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 6L6 18M6 6l12 12" />
@@ -160,19 +160,19 @@ function WalletHoldingsModal({
 
         <div className="mt-5 flex flex-col gap-1">
           {holdings.length === 0 ? (
-            <p className="py-4 text-center text-sm text-zinc-500">No holdings in this wallet.</p>
+            <p className="py-4 text-center text-sm text-zinc-600">No holdings in this wallet.</p>
           ) : (
             holdings.map((holding) => (
               <div
                 key={holding.symbol}
-                className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5"
+                className="flex items-center gap-3 rounded-xl border border-black/10 bg-black/5 px-3 py-2.5"
               >
                 {holding.cmcId ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={coinLogoUrl(holding.cmcId)}
                     alt=""
-                    className="h-8 w-8 shrink-0 rounded-full bg-white/10 object-cover"
+                    className="h-8 w-8 shrink-0 rounded-full bg-black/10 object-cover"
                   />
                 ) : (
                   <span
@@ -183,10 +183,10 @@ function WalletHoldingsModal({
                   </span>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-zinc-50">{holding.name}</p>
-                  <p className="text-xs text-zinc-500">{holding.network}</p>
+                  <p className="text-sm font-medium text-zinc-900">{holding.name}</p>
+                  <p className="text-xs text-zinc-600">{holding.network}</p>
                 </div>
-                <span className="text-sm font-semibold text-zinc-50">{formatGBP(holding.value)}</span>
+                <span className="text-sm font-semibold text-zinc-900">{formatGBP(holding.value)}</span>
               </div>
             ))
           )}
@@ -209,8 +209,8 @@ export default function ConnectedWallets({
   return (
     <div>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="text-base font-semibold text-zinc-50">Your Connected Accounts</h2>
-        <p className="text-sm text-zinc-500">{accounts.length} accounts connected</p>
+        <h2 className="text-base font-semibold text-zinc-900">Your Connected Accounts</h2>
+        <p className="text-sm text-zinc-600">{accounts.length} accounts connected</p>
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">

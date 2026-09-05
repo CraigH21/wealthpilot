@@ -148,7 +148,7 @@ export default function AICoachPage() {
         onNewConversation={handleNewConversation}
       />
 
-      <div className="flex min-w-[420px] flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl">
+      <div className="flex min-w-[420px] flex-1 flex-col overflow-hidden rounded-2xl border border-black/10 bg-black/[0.03] backdrop-blur-xl">
         <ChatHeader />
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-6">
@@ -157,10 +157,10 @@ export default function AICoachPage() {
               {briefing && <WealthBriefingCard briefing={briefing} />}
 
               <div className="text-center">
-                <h2 className="text-lg font-semibold text-zinc-50">
+                <h2 className="text-lg font-semibold text-zinc-900">
                   How can I help with your money today?
                 </h2>
-                <p className="mt-1 text-sm text-zinc-500">
+                <p className="mt-1 text-sm text-zinc-600">
                   Try one of these, or ask anything below.
                 </p>
               </div>

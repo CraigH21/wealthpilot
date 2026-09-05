@@ -19,7 +19,7 @@ export default function SuggestedPrompts({
           key={prompt}
           type="button"
           onClick={() => onSelect(prompt)}
-          className="rounded-2xl border border-white/10 bg-white/5 p-4 text-left text-sm text-zinc-300 transition-all duration-300 ease-out hover:border-accent-border hover:bg-accent-soft hover:text-zinc-50 hover:shadow-[0_0_16px_var(--accent-glow)]"
+          className="rounded-2xl border border-black/10 bg-black/5 p-4 text-left text-sm text-zinc-600 transition-all duration-300 ease-out hover:border-accent-border hover:bg-accent-soft hover:text-zinc-900 hover:shadow-[0_0_16px_var(--accent-glow)]"
         >
           {prompt}
         </button>

@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #09090b;
-  --foreground: #fafafa;
+  --background: #f5f4f2;
+  --foreground: #18181b;
 
   /* Default accent (Emerald) — matches the theme applied before the
      inline theme-init script runs, so there is no flash on first paint. */
@@ -23,6 +23,11 @@
   --pro-soft: rgba(168, 85, 247, 0.14);
   --pro-strong: rgba(168, 85, 247, 0.3);
   --pro-glow: rgba(168, 85, 247, 0.5);
+
+  /* Third accent, two themes ahead in the same rotation `--pro-accent`
+     uses — keeps a trio of same-system colours (e.g. the goals rings)
+     visually distinct from each other no matter which theme is active. */
+  --tertiary-accent: #38bdf8;
 }
 
 [data-theme="emerald"] {
@@ -39,6 +44,7 @@
   --pro-soft: rgba(168, 85, 247, 0.14);
   --pro-strong: rgba(168, 85, 247, 0.3);
   --pro-glow: rgba(168, 85, 247, 0.5);
+  --tertiary-accent: #38bdf8;
 }
 
 [data-theme="purple"] {
@@ -55,6 +61,7 @@
   --pro-soft: rgba(14, 165, 233, 0.14);
   --pro-strong: rgba(14, 165, 233, 0.3);
   --pro-glow: rgba(14, 165, 233, 0.5);
+  --tertiary-accent: #f59e0b;
 }
 
 [data-theme="ocean"] {
@@ -71,6 +78,7 @@
   --pro-soft: rgba(245, 158, 11, 0.14);
   --pro-strong: rgba(245, 158, 11, 0.3);
   --pro-glow: rgba(255, 209, 102, 0.5);
+  --tertiary-accent: #34d399;
 }
 
 [data-theme="gold"] {
@@ -83,6 +91,7 @@
   --accent-from: #f59e0b;
   --accent-to: #b45309;
   --bg-image: url("/themes/bg-gold.jpg");
+  --tertiary-accent: #c084fc;
   --pro-accent: #34d399;
   --pro-soft: rgba(16, 185, 129, 0.14);
   --pro-strong: rgba(16, 185, 129, 0.3);
@@ -104,7 +113,7 @@
 
 body {
   background-color: var(--background);
-  background-image: linear-gradient(rgba(9, 9, 11, 0.4), rgba(9, 9, 11, 0.4)), var(--bg-image);
+  background-image: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)), var(--bg-image);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -123,13 +132,13 @@ body {
    element made the fill disappear entirely — box-shadow has neither
    problem, so it's the base this now stands on. */
 .glass-edge-shell {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.45);
   border: 1px solid var(--accent-border);
   transition: background-color 500ms ease-out, border-color 500ms ease-out;
 }
 
 .glass-edge-card {
-  background-color: rgba(9, 9, 11, 0.28);
+  background-color: rgba(255, 255, 255, 0.55);
   border: 1px solid var(--accent-border);
   transition: background-color 500ms ease-out, border-color 500ms ease-out;
 }

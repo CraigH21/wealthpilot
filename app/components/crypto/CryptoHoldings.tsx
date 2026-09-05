@@ -36,11 +36,11 @@ export default function CryptoHoldings({ holdings }: { holdings: CryptoHoldingRo
 
       <div className="relative flex items-center justify-between">
         <div>
-          <h2 className="text-base font-semibold text-zinc-50">My Crypto Holdings</h2>
-          <p className="mt-1 text-sm text-zinc-500">Your complete holdings, performance and value</p>
+          <h2 className="text-base font-semibold text-zinc-900">My Crypto Holdings</h2>
+          <p className="mt-1 text-sm text-zinc-600">Your complete holdings, performance and value</p>
         </div>
-        <p className="text-sm text-zinc-500">
-          Total holdings value <span className="font-medium text-zinc-50">{formatGBP(totalValue)}</span>
+        <p className="text-sm text-zinc-600">
+          Total holdings value <span className="font-medium text-zinc-900">{formatGBP(totalValue)}</span>
         </p>
       </div>
 
@@ -50,7 +50,7 @@ export default function CryptoHoldings({ holdings }: { holdings: CryptoHoldingRo
       <div className="relative mt-5 max-h-[340px] overflow-auto">
         <table className="w-full min-w-[900px] border-collapse text-left text-sm">
           <thead className="sticky top-0 z-10">
-            <tr className="text-xs uppercase tracking-wide text-zinc-500">
+            <tr className="text-xs uppercase tracking-wide text-zinc-600">
               <th className="pb-3 pr-2 font-medium">#</th>
               <th className="pb-3 pr-2 font-medium">Coin</th>
               <th className="pb-3 pr-2 font-medium">Symbol</th>
@@ -63,13 +63,13 @@ export default function CryptoHoldings({ holdings }: { holdings: CryptoHoldingRo
               <th className="pb-3 pl-2 text-right font-medium">% of Portfolio</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-black/5">
             {holdings.map((holding, index) => {
               const positive24h = holding.changePct >= 0;
               const plPositive = (holding.totalPL ?? 0) >= 0;
               return (
-                <tr key={holding.symbol} className="transition-colors duration-300 ease-out hover:bg-white/5">
-                  <td className="py-3 pr-2 text-zinc-500">{index + 1}</td>
+                <tr key={holding.symbol} className="transition-colors duration-300 ease-out hover:bg-black/5">
+                  <td className="py-3 pr-2 text-zinc-600">{index + 1}</td>
                   <td className="py-3 pr-2">
                     <div className="flex items-center gap-2.5">
                       {holding.cmcId ? (
@@ -77,7 +77,7 @@ export default function CryptoHoldings({ holdings }: { holdings: CryptoHoldingRo
                         <img
                           src={coinLogoUrl(holding.cmcId)}
                           alt=""
-                          className="h-7 w-7 shrink-0 rounded-full bg-white/10 object-cover"
+                          className="h-7 w-7 shrink-0 rounded-full bg-black/10 object-cover"
                         />
                       ) : (
                         <span
@@ -87,20 +87,20 @@ export default function CryptoHoldings({ holdings }: { holdings: CryptoHoldingRo
                           {holding.symbol.slice(0, 3)}
                         </span>
                       )}
-                      <span className="font-medium text-zinc-50">{holding.name}</span>
+                      <span className="font-medium text-zinc-900">{holding.name}</span>
                     </div>
                   </td>
-                  <td className="py-3 pr-2 text-zinc-400">{holding.symbol}</td>
-                  <td className="py-3 pr-2 text-right text-zinc-300">
+                  <td className="py-3 pr-2 text-zinc-500">{holding.symbol}</td>
+                  <td className="py-3 pr-2 text-right text-zinc-600">
                     {holding.quantity !== null ? `${holding.quantity.toFixed(4)} ${holding.symbol}` : "—"}
                   </td>
-                  <td className="py-3 pr-2 text-right text-zinc-300">
+                  <td className="py-3 pr-2 text-right text-zinc-600">
                     {holding.avgBuyPriceGBP !== null ? formatGBP(holding.avgBuyPriceGBP, 2) : "—"}
                   </td>
-                  <td className="py-3 pr-2 text-right text-zinc-300">
+                  <td className="py-3 pr-2 text-right text-zinc-600">
                     {holding.currentPriceGBP !== null ? formatGBP(holding.currentPriceGBP, 2) : "—"}
                   </td>
-                  <td className="py-3 pr-2 text-right font-medium text-zinc-50">{formatGBP(holding.value)}</td>
+                  <td className="py-3 pr-2 text-right font-medium text-zinc-900">{formatGBP(holding.value)}</td>
                   <td className={`py-3 pr-2 text-right font-medium ${positive24h ? "text-accent" : "text-red-400"}`}>
                     {positive24h ? "+" : ""}
                     {holding.changePct}%
@@ -108,13 +108,13 @@ export default function CryptoHoldings({ holdings }: { holdings: CryptoHoldingRo
                   <td className={`py-3 pr-2 text-right font-medium ${plPositive ? "text-accent" : "text-red-400"}`}>
                     {holding.totalPL !== null ? `${plPositive ? "+" : ""}${formatGBP(holding.totalPL)}` : "—"}
                   </td>
-                  <td className="py-3 pl-2 text-right text-zinc-300">{holding.allocationPct}%</td>
+                  <td className="py-3 pl-2 text-right text-zinc-600">{holding.allocationPct}%</td>
                 </tr>
               );
             })}
           </tbody>
           <tfoot className="sticky bottom-0 z-10">
-            <tr className="border-t border-white/10 text-sm font-semibold text-zinc-50">
+            <tr className="border-t border-black/10 text-sm font-semibold text-zinc-900">
               <td className="py-3 pr-2" colSpan={6}>
                 TOTAL
               </td>

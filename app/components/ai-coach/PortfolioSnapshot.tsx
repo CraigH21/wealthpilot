@@ -41,8 +41,8 @@ export default function PortfolioSnapshot({
   return (
     <aside className="flex h-full w-[300px] shrink-0 flex-col gap-4 overflow-y-auto">
       <SnapshotCard>
-        <p className="text-xs font-medium text-zinc-500">Net Worth</p>
-        <p className="mt-1.5 text-2xl font-semibold text-zinc-50">
+        <p className="text-xs font-medium text-zinc-600">Net Worth</p>
+        <p className="mt-1.5 text-2xl font-semibold text-zinc-900">
           {formatGBP(context.netWorth)}
         </p>
         <span className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-accent">
@@ -52,18 +52,18 @@ export default function PortfolioSnapshot({
 
       <SnapshotCard>
         <div className="flex items-center justify-between">
-          <p className="text-xs font-medium text-zinc-500">Portfolio Health</p>
+          <p className="text-xs font-medium text-zinc-600">Portfolio Health</p>
           <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[10px] font-medium text-accent">
             {getHealthStatus(context.healthScore)}
           </span>
         </div>
         <div className="mt-1.5 flex items-baseline gap-1">
-          <span className="text-2xl font-semibold text-zinc-50">
+          <span className="text-2xl font-semibold text-zinc-900">
             {context.healthScore}
           </span>
-          <span className="text-xs text-zinc-500">/ 100</span>
+          <span className="text-xs text-zinc-600">/ 100</span>
         </div>
-        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-black/10">
           <div
             className="h-full rounded-full bg-accent transition-all duration-500 ease-out"
             style={{ width: `${context.healthScore}%` }}
@@ -72,7 +72,7 @@ export default function PortfolioSnapshot({
       </SnapshotCard>
 
       <SnapshotCard>
-        <p className="text-xs font-medium text-zinc-500">Asset Allocation</p>
+        <p className="text-xs font-medium text-zinc-600">Asset Allocation</p>
         <div className="mt-2 flex items-center gap-4">
           <div className="h-24 w-24 shrink-0">
             <ResponsiveContainer width="100%" height="100%">
@@ -101,14 +101,14 @@ export default function PortfolioSnapshot({
                 key={holding.id}
                 className="flex items-center justify-between gap-2 text-xs"
               >
-                <span className="flex items-center gap-1.5 text-zinc-400">
+                <span className="flex items-center gap-1.5 text-zinc-500">
                   <span
                     className="h-2 w-2 shrink-0 rounded-full"
                     style={{ backgroundColor: holding.color }}
                   />
                   {holding.name}
                 </span>
-                <span className="font-medium text-zinc-300">
+                <span className="font-medium text-zinc-600">
                   {holding.allocationPct}%
                 </span>
               </div>
@@ -119,15 +119,15 @@ export default function PortfolioSnapshot({
 
       {goal && (
         <SnapshotCard>
-          <p className="text-xs font-medium text-zinc-500">Active Goal</p>
-          <p className="mt-1 text-sm font-semibold text-zinc-50">{goal.name}</p>
+          <p className="text-xs font-medium text-zinc-600">Active Goal</p>
+          <p className="mt-1 text-sm font-semibold text-zinc-900">{goal.name}</p>
           <div className="mt-2 flex items-center justify-between text-xs">
-            <span className="text-zinc-400">
+            <span className="text-zinc-500">
               {formatGBP(goal.currentAmount)} / {formatGBP(goal.targetAmount)}
             </span>
             <span className="font-medium text-accent">{goalPct}%</span>
           </div>
-          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-black/10">
             <div
               className="h-full rounded-full bg-sky-400 transition-all duration-500 ease-out"
               style={{ width: `${goalPct}%` }}
@@ -138,7 +138,7 @@ export default function PortfolioSnapshot({
 
       <SnapshotCard>
         <div className="flex items-center justify-between">
-          <p className="text-xs font-medium text-zinc-500">Connected Accounts</p>
+          <p className="text-xs font-medium text-zinc-600">Connected Accounts</p>
           <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[10px] font-medium text-accent">
             {context.connectedAccounts.length} Connected
           </span>
@@ -151,14 +151,14 @@ export default function PortfolioSnapshot({
                 <img
                   src={account.logo}
                   alt=""
-                  className="h-6 w-6 shrink-0 rounded-full bg-white/10 object-cover"
+                  className="h-6 w-6 shrink-0 rounded-full bg-black/10 object-cover"
                 />
               ) : (
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-500/10 text-[10px] font-semibold text-zinc-300">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-500/10 text-[10px] font-semibold text-zinc-600">
                   {account.name[0]}
                 </span>
               )}
-              <span className="flex-1 truncate text-sm text-zinc-300">
+              <span className="flex-1 truncate text-sm text-zinc-600">
                 {account.name}
               </span>
               <span

@@ -34,15 +34,15 @@ export default function TopMovers({ coins }: { coins: MarketCoin[] }) {
       <EdgeGlow />
 
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-zinc-50">Top Movers (24h)</h3>
-        <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1">
+        <h3 className="text-sm font-semibold text-zinc-900">Top Movers (24h)</h3>
+        <div className="flex items-center gap-1 rounded-full border border-black/10 bg-black/5 p-1">
           {(["gainers", "losers", "trending"] as const).map((option) => (
             <button
               key={option}
               type="button"
               onClick={() => setTab(option)}
               className={`rounded-full px-2.5 py-1 text-[11px] font-medium capitalize ${
-                tab === option ? "bg-accent-soft text-accent" : "text-zinc-500"
+                tab === option ? "bg-accent-soft text-accent" : "text-zinc-600"
               }`}
             >
               {option}
@@ -60,9 +60,9 @@ export default function TopMovers({ coins }: { coins: MarketCoin[] }) {
               <img
                 src={coinLogoUrl(coin.id)}
                 alt=""
-                className="h-6 w-6 shrink-0 rounded-full bg-white/10 object-cover"
+                className="h-6 w-6 shrink-0 rounded-full bg-black/10 object-cover"
               />
-              <span className="flex-1 truncate text-sm font-medium text-zinc-50">{coin.symbol}</span>
+              <span className="flex-1 truncate text-sm font-medium text-zinc-900">{coin.symbol}</span>
               {tab === "trending" ? (
                 <span className="text-sm font-semibold text-accent">
                   {(turnoverRatio(coin) * 100).toFixed(0)}% turnover

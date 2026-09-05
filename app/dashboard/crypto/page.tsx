@@ -75,8 +75,8 @@ export default async function CryptoPage() {
     <div className="flex min-w-0 flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-50 sm:text-4xl">Crypto</h1>
-          <p className="mt-1.5 text-sm text-zinc-500">
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">Crypto</h1>
+          <p className="mt-1.5 text-sm text-zinc-600">
             Track your crypto portfolio and the live crypto market.
           </p>
         </div>
@@ -85,11 +85,11 @@ export default async function CryptoPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <AddWalletBar />
 
-        <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+        <div className="flex items-center gap-3 rounded-2xl border border-black/10 bg-black/5 px-4 py-2.5">
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-zinc-600">
             Global Market Cap
           </span>
-          <span className="text-sm font-semibold text-zinc-50">{formatGBP(globalMarketCap.totalMarketCapGBP)}</span>
+          <span className="text-sm font-semibold text-zinc-900">{formatGBP(globalMarketCap.totalMarketCapGBP)}</span>
           <span
             className={`text-xs font-medium ${globalMarketCapPositive ? "text-accent" : "text-red-400"}`}
           >

@@ -137,11 +137,11 @@ export default function MessageInput({
   };
 
   return (
-    <div className="border-t border-white/10 bg-white/5 p-4 backdrop-blur-xl">
-      <div className="flex items-end gap-1.5 rounded-2xl border border-white/10 bg-[#050706]/60 py-1.5 pl-3 pr-1.5">
+    <div className="border-t border-black/10 bg-black/5 p-4 backdrop-blur-xl">
+      <div className="flex items-end gap-1.5 rounded-2xl border border-black/10 bg-white/70 py-1.5 pl-3 pr-1.5">
         <button
           type="button"
-          className="shrink-0 rounded-full p-2 text-zinc-500 transition-colors duration-300 ease-out hover:text-accent"
+          className="shrink-0 rounded-full p-2 text-zinc-600 transition-colors duration-300 ease-out hover:text-accent"
           aria-label="Attach file"
         >
           <svg
@@ -163,7 +163,7 @@ export default function MessageInput({
           onChange={(event) => setValue(event.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask WealthPilot anything about your money..."
-          className="max-h-32 flex-1 resize-none bg-transparent py-2 text-sm text-zinc-50 placeholder:text-zinc-500 focus:outline-none"
+          className="max-h-32 flex-1 resize-none bg-transparent py-2 text-sm text-zinc-900 placeholder:text-zinc-600 focus:outline-none"
         />
 
         <button
@@ -175,7 +175,7 @@ export default function MessageInput({
           className={`shrink-0 rounded-full p-2 transition-colors duration-300 ease-out disabled:cursor-not-allowed disabled:opacity-30 ${
             isListening
               ? "bg-accent-soft text-accent shadow-[0_0_16px_var(--accent-glow)]"
-              : "text-zinc-500 hover:text-accent"
+              : "text-zinc-600 hover:text-accent"
           }`}
         >
           <svg

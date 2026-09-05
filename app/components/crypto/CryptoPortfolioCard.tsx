@@ -49,11 +49,11 @@ export default function CryptoPortfolioCard({
 
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-600">
             Your Crypto Portfolio
           </p>
           <div className="mt-2 flex flex-wrap items-end gap-3">
-            <h2 className="text-4xl font-semibold tracking-tight text-zinc-50 sm:text-5xl">
+            <h2 className="text-4xl font-semibold tracking-tight text-zinc-900 sm:text-5xl">
               {formatGBP(totalValue)}
             </h2>
             <span
@@ -68,22 +68,22 @@ export default function CryptoPortfolioCard({
 
           <div className="mt-4 flex flex-wrap gap-6">
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">24h Change</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-600">24h Change</p>
               <p className={`mt-0.5 text-sm font-semibold ${positive ? "text-accent" : "text-red-400"}`}>
                 {positive ? "+" : ""}
                 {changePct}%
               </p>
             </div>
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">Total Profit</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-600">Total Profit</p>
               <p className={`mt-0.5 text-sm font-semibold ${profitPositive ? "text-accent" : "text-red-400"}`}>
                 {profitPositive ? "+" : ""}
                 {formatGBP(totalProfit)}
               </p>
             </div>
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">Best Performer</p>
-              <p className="mt-0.5 text-sm font-semibold text-zinc-50">
+              <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-600">Best Performer</p>
+              <p className="mt-0.5 text-sm font-semibold text-zinc-900">
                 {bestPerformerSymbol}{" "}
                 <span className="text-accent">
                   +{bestPerformerChangePct}%
@@ -93,7 +93,7 @@ export default function CryptoPortfolioCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-md">
+        <div className="flex items-center gap-1 rounded-full border border-black/10 bg-black/5 p-1 backdrop-blur-md">
           {RANGES.map((option) => {
             const active = option === range;
             return (
@@ -104,7 +104,7 @@ export default function CryptoPortfolioCard({
                 className={`rounded-full px-3 py-1 text-xs font-medium ${
                   active
                     ? "bg-accent-soft text-accent shadow-[0_0_14px_var(--accent-glow)]"
-                    : "text-zinc-500"
+                    : "text-zinc-600"
                 }`}
               >
                 {option}

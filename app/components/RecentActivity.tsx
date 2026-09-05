@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import EdgeGlow from "./EdgeGlow";
 import { useEdgeGlow } from "../hooks/useEdgeGlow";
 
@@ -42,7 +43,7 @@ const MOCK_ACTIVITY: ActivityItem[] = [
     amount: "+£18.40",
     positive: true,
     initials: "T2",
-    badgeClass: "bg-zinc-500/15 text-zinc-300",
+    badgeClass: "bg-zinc-500/15 text-zinc-600",
     logo: "/icons/platforms/trading212.png",
   },
   {
@@ -71,28 +72,28 @@ export default function RecentActivity({
     <section
       ref={cardRef}
       onMouseMove={handleMouseMove}
-      className="group glass-edge-card relative overflow-hidden rounded-3xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_3px_3px_8px_rgba(255,255,255,0.1),inset_-2px_-2px_6px_var(--accent-soft)] backdrop-blur-[32px] sm:p-8"
+      className="group glass-edge-card relative w-full overflow-hidden rounded-3xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_3px_3px_8px_rgba(255,255,255,0.1),inset_-2px_-2px_6px_var(--accent-soft)] backdrop-blur-[32px] transition-transform duration-300 ease-out hover:-translate-y-[3px] hover:scale-[1.01] sm:p-6"
     >
       <EdgeGlow />
 
       <div className="relative flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h3 className="text-base font-semibold text-zinc-50">
+          <h3 className="text-base font-semibold text-zinc-900">
             Recent Activity
           </h3>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm text-zinc-600">
             Your latest transactions across all accounts
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <a
-            href="#"
-            className="text-sm font-medium text-accent transition-colors duration-300 ease-out hover:text-zinc-50"
+          <Link
+            href="/dashboard/activity"
+            className="text-sm font-medium text-accent transition-colors duration-300 ease-out hover:text-zinc-900"
           >
             View all →
-          </a>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-zinc-300">
+          </Link>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-medium text-zinc-600">
             {period}
             <svg
               viewBox="0 0 24 24"
@@ -109,13 +110,13 @@ export default function RecentActivity({
         </div>
       </div>
 
-      <div className="relative mt-5 flex flex-col divide-y divide-white/5">
+      <div className="relative mt-5 flex flex-col divide-y divide-black/5">
         {activities.map((item, index) => (
           <div
             key={`${item.merchant}-${index}`}
             className="flex items-center gap-4 py-3 first:pt-0 last:pb-0"
           >
-            <span className="w-14 shrink-0 text-xs text-zinc-500">
+            <span className="w-14 shrink-0 text-xs text-zinc-600">
               {item.time}
             </span>
 
@@ -124,7 +125,7 @@ export default function RecentActivity({
               <img
                 src={item.logo}
                 alt=""
-                className="h-9 w-9 shrink-0 rounded-full bg-white/10 object-cover"
+                className="h-9 w-9 shrink-0 rounded-full bg-black/10 object-cover"
               />
             ) : (
               <span
@@ -135,15 +136,15 @@ export default function RecentActivity({
             )}
 
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-zinc-50">
+              <p className="text-sm font-medium text-zinc-900">
                 {item.merchant}
               </p>
-              <p className="text-xs text-zinc-500">{item.description}</p>
+              <p className="text-xs text-zinc-600">{item.description}</p>
             </div>
 
             <span
               className={`shrink-0 text-sm font-semibold whitespace-nowrap ${
-                item.positive ? "text-accent" : "text-zinc-50"
+                item.positive ? "text-accent" : "text-zinc-900"
               }`}
             >
               {item.amount}

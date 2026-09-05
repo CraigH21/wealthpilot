@@ -81,15 +81,15 @@ export default function MarketTable({ coins }: { coins: MarketCoin[] }) {
     <div className="glass-edge-card relative overflow-hidden rounded-3xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_3px_3px_8px_rgba(255,255,255,0.1),inset_-2px_-2px_6px_var(--accent-soft)] backdrop-blur-[32px] sm:p-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="text-base font-semibold text-zinc-50">Live Crypto Market</h2>
-          <p className="mt-1 text-sm text-zinc-500">All prices in GBP • Live data from CoinMarketCap</p>
+          <h2 className="text-base font-semibold text-zinc-900">Live Crypto Market</h2>
+          <p className="mt-1 text-sm text-zinc-600">All prices in GBP • Live data from CoinMarketCap</p>
         </div>
 
         <div className="relative w-full max-w-xs">
           <svg
             viewBox="0 0 24 24"
             fill="none"
-            className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500"
+            className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-600"
             stroke="currentColor"
             strokeWidth={2}
             strokeLinecap="round"
@@ -106,7 +106,7 @@ export default function MarketTable({ coins }: { coins: MarketCoin[] }) {
               setPage(1);
             }}
             placeholder="Search coins, symbols or categories..."
-            className="w-full rounded-full border border-white/10 bg-white/5 py-2.5 pl-10 pr-4 text-sm text-zinc-50 placeholder:text-zinc-500 focus:outline-none"
+            className="w-full rounded-full border border-black/10 bg-black/5 py-2.5 pl-10 pr-4 text-sm text-zinc-900 placeholder:text-zinc-600 focus:outline-none"
           />
         </div>
       </div>
@@ -122,7 +122,7 @@ export default function MarketTable({ coins }: { coins: MarketCoin[] }) {
               className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors duration-300 ease-out ${
                 active
                   ? "border-accent-border bg-accent-soft text-accent"
-                  : "border-white/10 bg-white/5 text-zinc-400 hover:text-zinc-50"
+                  : "border-black/10 bg-black/5 text-zinc-500 hover:text-zinc-900"
               }`}
             >
               {filter.label}
@@ -134,7 +134,7 @@ export default function MarketTable({ coins }: { coins: MarketCoin[] }) {
       <div className="mt-6 overflow-x-auto">
         <table className="w-full min-w-[880px] border-collapse text-left text-sm">
           <thead>
-            <tr className="text-xs uppercase tracking-wide text-zinc-500">
+            <tr className="text-xs uppercase tracking-wide text-zinc-600">
               <th className="pb-3 pr-2 font-medium">#</th>
               <th className="pb-3 pr-2 font-medium">Name</th>
               <th className="pb-3 pr-2 font-medium">Symbol</th>
@@ -146,32 +146,32 @@ export default function MarketTable({ coins }: { coins: MarketCoin[] }) {
               <th className="pb-3 pl-2" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-black/5">
             {pageRows.map((coin) => {
               const positive = coin.percentChange24h >= 0;
               const positive7d = coin.percentChange7d >= 0;
               return (
-                <tr key={coin.id} className="transition-colors duration-300 ease-out hover:bg-white/5">
-                  <td className="py-3 pr-2 text-zinc-500">{coin.rank}</td>
+                <tr key={coin.id} className="transition-colors duration-300 ease-out hover:bg-black/5">
+                  <td className="py-3 pr-2 text-zinc-600">{coin.rank}</td>
                   <td className="py-3 pr-2">
                     <div className="flex items-center gap-2.5">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={coinLogoUrl(coin.id)}
                         alt=""
-                        className="h-6 w-6 shrink-0 rounded-full bg-white/10 object-cover"
+                        className="h-6 w-6 shrink-0 rounded-full bg-black/10 object-cover"
                       />
-                      <span className="font-medium text-zinc-50">{coin.name}</span>
+                      <span className="font-medium text-zinc-900">{coin.name}</span>
                     </div>
                   </td>
-                  <td className="py-3 pr-2 text-zinc-400">{coin.symbol}</td>
-                  <td className="py-3 pr-2 text-right font-medium text-zinc-50">{formatGBP(coin.priceGBP)}</td>
+                  <td className="py-3 pr-2 text-zinc-500">{coin.symbol}</td>
+                  <td className="py-3 pr-2 text-right font-medium text-zinc-900">{formatGBP(coin.priceGBP)}</td>
                   <td className={`py-3 pr-2 text-right font-medium ${positive ? "text-accent" : "text-red-400"}`}>
                     {positive ? "+" : ""}
                     {coin.percentChange24h.toFixed(2)}%
                   </td>
-                  <td className="py-3 pr-2 text-right text-zinc-300">{formatCompact(coin.marketCapGBP)}</td>
-                  <td className="py-3 pr-2 text-right text-zinc-300">{formatCompact(coin.volume24hGBP)}</td>
+                  <td className="py-3 pr-2 text-right text-zinc-600">{formatCompact(coin.marketCapGBP)}</td>
+                  <td className="py-3 pr-2 text-right text-zinc-600">{formatCompact(coin.volume24hGBP)}</td>
                   <td className="py-3 pr-2">
                     <Sparkline positive={positive7d} />
                   </td>
@@ -180,7 +180,7 @@ export default function MarketTable({ coins }: { coins: MarketCoin[] }) {
                       type="button"
                       onClick={() => toggleFavourite(coin.id)}
                       aria-label={favourites.has(coin.id) ? "Remove from favourites" : "Add to favourites"}
-                      className={favourites.has(coin.id) ? "text-accent" : "text-zinc-600 hover:text-zinc-400"}
+                      className={favourites.has(coin.id) ? "text-accent" : "text-zinc-600 hover:text-zinc-500"}
                     >
                       <svg
                         viewBox="0 0 24 24"
@@ -200,7 +200,7 @@ export default function MarketTable({ coins }: { coins: MarketCoin[] }) {
             })}
             {pageRows.length === 0 && (
               <tr>
-                <td colSpan={9} className="py-8 text-center text-sm text-zinc-500">
+                <td colSpan={9} className="py-8 text-center text-sm text-zinc-600">
                   No coins match your search or filter.
                 </td>
               </tr>
@@ -209,7 +209,7 @@ export default function MarketTable({ coins }: { coins: MarketCoin[] }) {
         </table>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-xs text-zinc-500">
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-xs text-zinc-600">
         <p>
           Showing {pageRows.length ? (currentPage - 1) * ROWS_PER_PAGE + 1 : 0}–
           {(currentPage - 1) * ROWS_PER_PAGE + pageRows.length} of {filtered.length} loaded
@@ -220,7 +220,7 @@ export default function MarketTable({ coins }: { coins: MarketCoin[] }) {
             type="button"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="rounded-full border border-white/10 bg-white/5 p-1.5 text-zinc-400 disabled:opacity-30"
+            className="rounded-full border border-black/10 bg-black/5 p-1.5 text-zinc-500 disabled:opacity-30"
             aria-label="Previous page"
           >
             <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -233,7 +233,7 @@ export default function MarketTable({ coins }: { coins: MarketCoin[] }) {
             type="button"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="rounded-full border border-white/10 bg-white/5 p-1.5 text-zinc-400 disabled:opacity-30"
+            className="rounded-full border border-black/10 bg-black/5 p-1.5 text-zinc-500 disabled:opacity-30"
             aria-label="Next page"
           >
             <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">

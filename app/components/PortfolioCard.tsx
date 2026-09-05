@@ -51,53 +51,33 @@ export default function PortfolioCard({
       />
 
       <div className="relative">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            {!logoUrl || logoFailed ? (
-              <span
-                className={`flex h-10 w-10 items-center justify-center rounded-xl text-xs font-semibold transition-colors duration-500 ease-out ${accent}`}
-              >
-                {symbol}
-              </span>
-            ) : (
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 p-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={logoUrl}
-                  alt={`${name} logo`}
-                  className="h-full w-full object-contain"
-                  onError={() => setLogoFailed(true)}
-                />
-              </span>
-            )}
-            <div>
-              <p className="text-sm font-medium text-zinc-50">{name}</p>
-              <p className="text-xs text-zinc-500">{symbol}</p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            aria-label={`View ${name} details`}
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/5 text-zinc-400"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              className="h-3.5 w-3.5"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
+        <div className="flex items-center gap-3">
+          {!logoUrl || logoFailed ? (
+            <span
+              className={`flex h-10 w-10 items-center justify-center rounded-xl text-xs font-semibold shadow-[0_4px_10px_rgba(0,0,0,0.25)] transition-colors duration-500 ease-out ${accent}`}
             >
-              <path d="M9 6l6 6-6 6" />
-            </svg>
-          </button>
+              {symbol}
+            </span>
+          ) : (
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-black/5 p-2 shadow-[0_4px_10px_rgba(0,0,0,0.25)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={logoUrl}
+                alt={`${name} logo`}
+                className="h-full w-full object-contain"
+                onError={() => setLogoFailed(true)}
+              />
+            </span>
+          )}
+          <div>
+            <p className="text-sm font-medium text-zinc-900">{name}</p>
+            <p className="text-xs text-zinc-600">{symbol}</p>
+          </div>
         </div>
 
         <div className="mt-4 flex items-end justify-between gap-3">
           <div>
-            <p className="text-2xl font-semibold text-zinc-50">{value}</p>
+            <p className="text-2xl font-semibold text-zinc-900">{value}</p>
             <p
               className={`mt-1 text-sm font-medium transition-colors duration-500 ease-out ${
                 positive ? "text-accent" : "text-red-400"
