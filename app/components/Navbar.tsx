@@ -1,6 +1,7 @@
 import AccountGreeting from "./AccountGreeting";
 import ThemeSwitcher from "./ThemeSwitcher";
 import ProUpsellCard from "./ProUpsellCard";
+import AppearancePill from "./AppearancePill";
 
 export default function Navbar() {
   return (
@@ -20,6 +21,7 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
+          <AppearancePill />
           <AccountGreeting />
           <ThemeSwitcher />
         </div>

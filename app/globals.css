@@ -3,6 +3,8 @@
 :root {
   --background: #f5f4f2;
   --foreground: #18181b;
+  --glass-shell-bg: rgba(255, 255, 255, 0.45);
+  --glass-card-bg: rgba(255, 255, 255, 0.55);
 
   /* Default accent (Emerald) — matches the theme applied before the
      inline theme-init script runs, so there is no flash on first paint. */
@@ -98,6 +100,16 @@
   --pro-glow: rgba(16, 185, 129, 0.5);
 }
 
+/* Dark mode is a separate axis from the 4 accent themes above — only
+   background/card/text tones change here; --accent and friends are left
+   alone so every accent colour still works in both light and dark. */
+[data-mode="dark"] {
+  --background: #07131f;
+  --foreground: #f4f4f5;
+  --glass-shell-bg: rgba(16, 34, 53, 0.92);
+  --glass-card-bg: rgba(16, 34, 53, 0.92);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -123,6 +135,13 @@ body {
   transition: background-image 500ms ease-out;
 }
 
+/* Dark mode drops the decorative per-theme wallpaper photo entirely — the
+   flat navy background is the whole point, not a dimmed version of the
+   light wallpaper. */
+[data-mode="dark"] body {
+  background-image: none;
+}
+
 /* Shared "3D glass edge" treatment: a thin theme-coloured border plus a
    soft blurred highlight glowing in from the top-left corner (light) and
    the theme accent glowing in from the bottom-right (colour), both via
@@ -132,13 +151,13 @@ body {
    element made the fill disappear entirely — box-shadow has neither
    problem, so it's the base this now stands on. */
 .glass-edge-shell {
-  background-color: rgba(255, 255, 255, 0.45);
+  background-color: var(--glass-shell-bg);
   border: 1px solid var(--accent-border);
   transition: background-color 500ms ease-out, border-color 500ms ease-out;
 }
 
 .glass-edge-card {
-  background-color: rgba(255, 255, 255, 0.55);
+  background-color: var(--glass-card-bg);
   border: 1px solid var(--accent-border);
   transition: background-color 500ms ease-out, border-color 500ms ease-out;
 }
@@ -184,4 +203,57 @@ body {
 
 .particle-drift {
   animation: particle-drift 8s ease-in-out infinite;
+}
+
+/* ---------------------------------------------------------------------
+   Dark mode text/border overrides, scoped to the dashboard shell only.
+   Components throughout the dashboard hardcode Tailwind's zinc/black
+   utilities directly (text-zinc-900, bg-black/5, border-black/10, etc.)
+   rather than a semantic "foreground" token, so a background/card swap
+   alone would leave near-black text sitting on a near-black card. Rather
+   than touching every component file, this redefines what those specific
+   utilities resolve to once dark mode is active. Scoped under
+   `.glass-edge-shell` (the dashboard's own wrapper, used nowhere else)
+   so the separate marketing landing page — which already has its own
+   intentionally-dark styling using some of these same classes — is never
+   touched by this.
+   --------------------------------------------------------------------- */
+[data-mode="dark"] .glass-edge-shell .text-zinc-900 {
+  color: #f4f4f5;
+}
+[data-mode="dark"] .glass-edge-shell .text-zinc-700 {
+  color: #e4e4e7;
+}
+[data-mode="dark"] .glass-edge-shell .text-zinc-600 {
+  color: #d4d4d8;
+}
+[data-mode="dark"] .glass-edge-shell .text-zinc-500 {
+  color: #a1a1aa;
+}
+[data-mode="dark"] .glass-edge-shell .text-zinc-400 {
+  color: #71717a;
+}
+[data-mode="dark"] .glass-edge-shell .bg-black\/5 {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+[data-mode="dark"] .glass-edge-shell .bg-black\/10 {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+[data-mode="dark"] .glass-edge-shell .hover\:bg-black\/5:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+[data-mode="dark"] .glass-edge-shell .hover\:bg-black\/10:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+[data-mode="dark"] .glass-edge-shell .border-black\/10 {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+[data-mode="dark"] .glass-edge-shell .divide-black\/5 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+/* "Floating white box" elements (AI Coach's insight cards, the Goals
+   rings' circular backdrop) — swap to the same dark card tone as the
+   rest of the shell instead of staying a jarring solid white. */
+[data-mode="dark"] .glass-edge-shell .bg-white {
+  background-color: var(--glass-card-bg);
 }
