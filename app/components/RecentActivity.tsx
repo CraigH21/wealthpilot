@@ -59,12 +59,10 @@ const MOCK_ACTIVITY: ActivityItem[] = [
 
 type RecentActivityProps = {
   activities?: ActivityItem[];
-  period?: string;
 };
 
 export default function RecentActivity({
   activities = MOCK_ACTIVITY,
-  period = "Today",
 }: RecentActivityProps) {
   const { cardRef, handleMouseMove } = useEdgeGlow<HTMLElement>();
 
@@ -86,28 +84,12 @@ export default function RecentActivity({
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard/activity"
-            className="text-sm font-medium text-accent transition-colors duration-300 ease-out hover:text-zinc-900"
-          >
-            View all →
-          </Link>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-medium text-zinc-600">
-            {period}
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              className="h-3 w-3"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M6 9l6 6 6-6" />
-            </svg>
-          </span>
-        </div>
+        <Link
+          href="/dashboard/activity"
+          className="text-sm font-medium text-accent transition-colors duration-300 ease-out hover:text-zinc-900"
+        >
+          View all →
+        </Link>
       </div>
 
       <div className="relative mt-5 flex flex-col divide-y divide-black/5">

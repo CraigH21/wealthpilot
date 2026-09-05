@@ -68,7 +68,17 @@ export default function AddAccountPanel({ open, onClose }: { open: boolean; onCl
     }, 300);
   };
 
-  const selectType = (typeId: AccountTypeId) => setState((s) => ({ ...s, typeId, step: "provider" }));
+  const selectType = (typeId: AccountTypeId) =>
+    setState((s) => ({
+      ...s,
+      typeId,
+      step: "provider",
+      // Pension's "Account type" dropdown has no blank option (every
+      // pension needs a type for risk scoring), so seed a sensible default
+      // rather than leaving the select showing one option while state
+      // silently holds an empty string.
+      accountType: typeId === "pension" ? "Balanced Pension Fund" : "",
+    }));
 
   const selectProvider = (provider: Provider) =>
     setState((s) => ({ ...s, provider, step: "connect", nickname: "" }));

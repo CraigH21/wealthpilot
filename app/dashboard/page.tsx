@@ -9,8 +9,8 @@ import ForexRatesCard from "../components/ForexRatesCard";
 import MarketPulseCard from "../components/MarketPulseCard";
 import GoalsSummaryCard from "../components/GoalsSummaryCard";
 import { generateCoachInsight } from "../lib/ai/coachService";
-import { coinLogoUrl } from "../lib/crypto/market";
-import { getPortfolioContext, type Security, type Transaction } from "../lib/mock/portfolioContext";
+import { coinLogoUrl, getMarketListings } from "../lib/crypto/market";
+import { getPortfolioContext, type ConnectedAccount, type Security, type Transaction } from "../lib/mock/portfolioContext";
 import { planGoal } from "../lib/goals/planning";
 import { getMarketPulseSnapshot } from "../lib/market/pulse";
 import { getForexSnapshot } from "../lib/forex/rates";
@@ -25,10 +25,20 @@ const formatGBP = (value: number) =>
 const SPARKLINE_UP = "0,28 10,24 20,26 30,18 40,20 50,14 60,17 70,10 80,12 90,6 100,4";
 const SPARKLINE_DOWN = "0,6 10,10 20,8 30,14 40,12 50,18 60,15 70,20 80,18 90,24 100,22";
 
-const CATEGORY_ACCENT: Record<Security["category"], string> = {
+const CATEGORY_ACCENT: Record<Security["category"] | "Cash" | "Pension", string> = {
   Crypto: "bg-orange-500/10 text-orange-400",
   Stocks: "bg-accent-soft text-accent",
   ETFs: "bg-sky-500/10 text-sky-400",
+  Cash: "bg-zinc-500/10 text-zinc-400",
+  Pension: "bg-purple-500/10 text-purple-400",
+};
+
+// financialmodelingprep's stock-logo CDN (used for logoSymbol elsewhere)
+// doesn't have data for UK-listed ETF tickers like VUSA/VWRP, so those use
+// a direct static logo instead rather than showing no logo at all.
+const SECURITY_LOGO_OVERRIDES: Record<string, string> = {
+  VUSA: "/icons/platforms/vanguard.svg",
+  VWRP: "/icons/platforms/vanguard.svg",
 };
 
 function toPortfolioCardProps(security: Security) {
@@ -37,12 +47,42 @@ function toPortfolioCardProps(security: Security) {
     name: security.name,
     symbol: security.symbol,
     logoSymbol: security.logoSymbol,
-    logoUrl: security.cmcId ? coinLogoUrl(security.cmcId) : null,
+    logoUrl:
+      SECURITY_LOGO_OVERRIDES[security.symbol] ?? (security.cmcId ? coinLogoUrl(security.cmcId) : null),
     value: formatGBP(security.value),
     change: `${positive ? "+" : ""}${security.changePct}%`,
     positive,
     accent: CATEGORY_ACCENT[security.category],
     sparkline: security.color,
+    sparklinePoints: positive ? SPARKLINE_UP : SPARKLINE_DOWN,
+  };
+}
+
+// Bank/payments/pension accounts aren't individual securities, but each
+// real account (not a lumped "Cash" total) belongs in the same
+// top-8-by-value ranking as everything else — often bigger than any single
+// stock or coin, and "which bank, what kind of account" is exactly what
+// makes a cash holding identifiable versus just a generic amount.
+const CASH_LIKE_CATEGORIES: ConnectedAccount["category"][] = ["bank", "payments", "pension"];
+
+function toAccountCardProps(account: ConnectedAccount) {
+  const isPension = account.category === "pension";
+  // Interest rate stands in for "how this holding is growing" the way a
+  // price change does for securities — real data already on bank accounts.
+  // Pensions don't carry an AER, so fall back to the same assumed growth
+  // rate `buildHoldings` already uses for the Pension category elsewhere.
+  const changePct = account.interestRateAER ?? (isPension ? 1.5 : 0);
+  const positive = changePct >= 0;
+  return {
+    name: account.name,
+    symbol: account.accountType ?? (isPension ? "Pension" : account.provider),
+    logoSymbol: null,
+    logoUrl: account.logo ?? null,
+    value: formatGBP(account.balance),
+    change: `${positive ? "+" : ""}${changePct}%`,
+    positive,
+    accent: isPension ? CATEGORY_ACCENT.Pension : CATEGORY_ACCENT.Cash,
+    sparkline: isPension ? "#a78bfa" : "#a1a1aa",
     sparklinePoints: positive ? SPARKLINE_UP : SPARKLINE_DOWN,
   };
 }
@@ -71,14 +111,40 @@ export default async function DashboardPage() {
   const coachInsight = await generateCoachInsight({ context });
   const marketPulse = await getMarketPulseSnapshot();
   const forexRates = await getForexSnapshot();
+  const marketCoins = await getMarketListings(100);
 
-  const portfolioCards = [...context.securities]
+  // Crypto's value is quantity × today's live price rather than the static
+  // mock number — stocks/ETFs stay static (no per-holding live feed exists
+  // for those; see the comment on Security.currentPriceGBP).
+  const marketBySymbol = new Map(marketCoins.map((coin) => [coin.symbol, coin]));
+  const liveSecurities = context.securities.map((security) => {
+    if (security.category !== "Crypto" || security.quantity == null) return security;
+    const live = marketBySymbol.get(security.symbol);
+    const currentPriceGBP = live?.priceGBP ?? security.currentPriceGBP;
+    if (currentPriceGBP == null) return security;
+    return {
+      ...security,
+      value: security.quantity * currentPriceGBP,
+      changePct: live ? Math.round(live.percentChange24h * 10) / 10 : security.changePct,
+    };
+  });
+
+  const cashLikeAccounts = context.connectedAccounts.filter(
+    (account) => CASH_LIKE_CATEGORIES.includes(account.category) && account.balance > 0
+  );
+
+  const portfolioCandidates = [
+    ...liveSecurities.map((security) => ({ value: security.value, card: toPortfolioCardProps(security) })),
+    ...cashLikeAccounts.map((account) => ({ value: account.balance, card: toAccountCardProps(account) })),
+  ];
+
+  const portfolioCards = portfolioCandidates
     .sort((a, b) => b.value - a.value)
     .slice(0, 8)
-    .map(toPortfolioCardProps);
+    .map((candidate) => candidate.card);
   const recentActivity = context.recentTransactions.slice(0, 6).map(toActivityItem);
 
-  const bestPerformer = context.securities.reduce((best, security) =>
+  const bestPerformer = liveSecurities.reduce((best, security) =>
     security.changePct > best.changePct ? security : best
   );
   // Matches the Goals page's headline number exactly: each goal's percentage
@@ -113,7 +179,8 @@ export default async function DashboardPage() {
     netWorthChange: `+${formatGBP(context.weeklyChangeAbs)}`,
     bestPerformerLabel: bestPerformer.symbol,
     bestPerformerChange: `+${bestPerformer.changePct}%`,
-    riskLevel: context.riskProfile,
+    riskLevel: context.portfolioRisk.category,
+    riskColor: context.portfolioRisk.color,
     goalProgress: overallGoalProgress,
   };
 
@@ -166,12 +233,12 @@ export default async function DashboardPage() {
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {portfolioCards.map((item) => (
-              <PortfolioCard key={item.symbol} {...item} />
+              <PortfolioCard key={item.name} {...item} />
             ))}
           </div>
         </div>
 
-        <RecentActivity activities={recentActivity} period="Recent" />
+        <RecentActivity activities={recentActivity} />
       </div>
     </>
   );

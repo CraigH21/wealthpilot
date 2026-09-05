@@ -7,6 +7,7 @@ import {
   type BankAccountType,
   type Provider,
 } from "../../lib/mock/accountConnection";
+import { PENSION_TYPES } from "../../lib/risk/score";
 import ProviderLogo from "./ProviderLogo";
 
 const CURRENCIES = ["GBP", "USD", "EUR"];
@@ -40,6 +41,7 @@ export default function StepConnect({
   onContinue: () => void;
 }) {
   const isBank = typeId === "bank";
+  const isPension = typeId === "pension";
   const canContinue = !isBank || bankAccountTypes.length > 0;
 
   const toggleBankAccountType = (type: BankAccountType) => {
@@ -98,6 +100,21 @@ export default function StepConnect({
             <span className="text-xs text-red-400">Select at least one account</span>
           )}
         </div>
+      ) : isPension ? (
+        <label className="flex flex-col gap-1.5">
+          <span className="text-xs font-medium text-zinc-500">Pension type</span>
+          <select
+            value={accountType}
+            onChange={(e) => onChangeAccountType(e.target.value)}
+            className="rounded-xl border border-black/10 bg-black/5 px-3 py-2.5 text-sm text-zinc-900 outline-none focus:border-[var(--accent-border-strong)]"
+          >
+            {PENSION_TYPES.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </label>
       ) : (
         <label className="flex flex-col gap-1.5">
           <span className="text-xs font-medium text-zinc-500">Account type</span>

@@ -36,6 +36,12 @@ export default function PortfolioCard({
   const [logoFailed, setLogoFailed] = useState(false);
   const logoUrl =
     logoUrlProp ?? (logoSymbol ? `https://financialmodelingprep.com/image-stock/${logoSymbol}.png` : null);
+  // SVG element ids must be unique per document and can't contain spaces.
+  // `symbol` is sometimes a human-readable label like "Balanced Pension
+  // Fund" rather than a ticker (breaking the `url(#...)` fill reference,
+  // falling back to solid black), and two cards can share the same symbol
+  // (e.g. two "Current Account" cards) — `name` is always unique per card.
+  const gradientId = `sparkline-fill-${name.replace(/[^a-zA-Z0-9]/g, "")}`;
 
   return (
     <div
@@ -90,7 +96,7 @@ export default function PortfolioCard({
           <svg viewBox="0 0 100 36" className="h-9 w-24 shrink-0">
             <defs>
               <linearGradient
-                id={`sparkline-fill-${symbol}`}
+                id={gradientId}
                 x1="0"
                 y1="0"
                 x2="0"
@@ -102,7 +108,7 @@ export default function PortfolioCard({
             </defs>
             <polygon
               points={`0,36 ${sparklinePoints} 100,36`}
-              fill={`url(#sparkline-fill-${symbol})`}
+              fill={`url(#${gradientId})`}
               stroke="none"
             />
             <polyline

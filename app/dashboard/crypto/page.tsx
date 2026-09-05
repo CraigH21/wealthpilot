@@ -23,17 +23,27 @@ export default async function CryptoPage() {
 
   const cryptoSecurities = context.securities.filter((s) => s.category === "Crypto");
   const cryptoAccounts = context.connectedAccounts.filter((a) => a.category === "crypto");
-  const totalValue = cryptoSecurities.reduce((sum, s) => sum + s.value, 0);
 
   const marketBySymbol = new Map(marketCoins.map((coin) => [coin.symbol, coin]));
 
-  const holdings: CryptoHoldingRow[] = cryptoSecurities.map((security) => {
+  // value = quantity actually held × today's live price — quantity is the
+  // real, fixed fact (how much Peter owns never changes on its own), so
+  // this is what should move with the market, not a number reverse-engineered
+  // from a static value divided by whatever the price happens to be today.
+  const liveHoldings = cryptoSecurities.map((security) => {
     const live = marketBySymbol.get(security.symbol);
-    const currentPriceGBP = live?.priceGBP ?? null;
-    const quantity = currentPriceGBP && currentPriceGBP > 0 ? security.value / currentPriceGBP : null;
+    const currentPriceGBP = live?.priceGBP ?? security.currentPriceGBP ?? null;
+    const quantity = security.quantity ?? null;
+    const value = quantity != null && currentPriceGBP != null ? quantity * currentPriceGBP : security.value;
+    return { security, live, currentPriceGBP, quantity, value };
+  });
+
+  const totalValue = liveHoldings.reduce((sum, h) => sum + h.value, 0);
+
+  const holdings: CryptoHoldingRow[] = liveHoldings.map(({ security, live, currentPriceGBP, quantity, value }) => {
     const totalPL =
-      security.avgBuyPriceGBP != null && quantity !== null
-        ? (currentPriceGBP! - security.avgBuyPriceGBP) * quantity
+      security.avgBuyPriceGBP != null && quantity != null && currentPriceGBP != null
+        ? (currentPriceGBP - security.avgBuyPriceGBP) * quantity
         : null;
 
     return {
@@ -44,10 +54,10 @@ export default async function CryptoPage() {
       quantity,
       avgBuyPriceGBP: security.avgBuyPriceGBP ?? null,
       currentPriceGBP,
-      value: security.value,
+      value,
       changePct: live ? Math.round(live.percentChange24h * 10) / 10 : security.changePct,
       totalPL,
-      allocationPct: totalValue > 0 ? Math.round((security.value / totalValue) * 1000) / 10 : 0,
+      allocationPct: totalValue > 0 ? Math.round((value / totalValue) * 1000) / 10 : 0,
     };
   });
 
@@ -59,12 +69,12 @@ export default async function CryptoPage() {
   const totalProfit = holdings.reduce((sum, h) => sum + (h.totalPL ?? 0), 0);
   const bestPerformer = [...holdings].sort((a, b) => b.changePct - a.changePct)[0];
 
-  const allocationSlices: AllocationSlice[] = cryptoSecurities
-    .map((security) => ({
+  const allocationSlices: AllocationSlice[] = liveHoldings
+    .map(({ security, value }) => ({
       symbol: security.symbol,
       name: security.name,
-      value: security.value,
-      pct: totalValue > 0 ? Math.round((security.value / totalValue) * 1000) / 10 : 0,
+      value,
+      pct: totalValue > 0 ? Math.round((value / totalValue) * 1000) / 10 : 0,
       color: security.color,
     }))
     .sort((a, b) => b.value - a.value);

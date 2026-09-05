@@ -1,5 +1,6 @@
 import { calculatePortfolioAllocation, calculatePortfolioHealthScore } from "../ai/calculators";
 import { TARGET_ALLOCATION_BY_RISK_PROFILE } from "../ai/contextHelpers";
+import { calculatePortfolioRiskScore, type PortfolioRiskResult } from "../risk/score";
 
 export type Profile = {
   name: string;
@@ -59,6 +60,10 @@ export type Security = {
   /** CoinMarketCap's numeric coin id — real logo artwork, not a lookup by
    * name/symbol against a different CDN. Crypto only. */
   cmcId?: number;
+  /** Units actually held — the real fact live value gets computed from
+   * (quantity × current price). Crypto only; stocks/ETFs have no live
+   * per-holding price feed to compute against (see `currentPriceGBP`). */
+  quantity?: number;
 };
 
 export type Goal = {
@@ -95,7 +100,14 @@ export type PortfolioContext = {
   monthlyIncome: number;
   monthlySpending: number;
   healthScore: number;
+  /** Stated risk tolerance / target allocation profile — drives the AI
+   * Coach's allocation-target comparisons. Distinct from `portfolioRisk`
+   * below, which measures the *actual* risk of current holdings; a
+   * Conservative user can still be holding a Very High Risk portfolio. */
   riskProfile: "Conservative" | "Moderate" | "Aggressive";
+  /** Measured risk of the portfolio as currently held, per the weighted
+   * asset-risk-score algorithm in `lib/risk/score.ts`. */
+  portfolioRisk: PortfolioRiskResult;
   holdings: Holding[];
   securities: Security[];
   goals: Goal[];
@@ -135,12 +147,19 @@ export type CryptoAllocationRow = { accountId: string; symbol: string; value: nu
 // rather than fabricated separately.
 const CRYPTO_COIN_INFO: Record<
   string,
-  { name: string; changePct: number; color: string; avgBuyPriceGBP: number; cmcId: number }
+  { name: string; changePct: number; color: string; avgBuyPriceGBP: number; cmcId: number; quantity: number }
 > = {
-  BTC: { name: "Bitcoin", changePct: 4.8, color: "#f79414", avgBuyPriceGBP: 38000, cmcId: 1 },
-  ETH: { name: "Ethereum", changePct: 3.1, color: "#8a92b2", avgBuyPriceGBP: 1350, cmcId: 1027 },
-  SOL: { name: "Solana", changePct: 7.9, color: "#00ffbd", avgBuyPriceGBP: 48, cmcId: 5426 },
-  LINK: { name: "Chainlink", changePct: 5.2, color: "#2a5ada", avgBuyPriceGBP: 9.2, cmcId: 1975 },
+  // `quantity` is the real, fixed fact — how many coins Peter actually
+  // holds. `value` on the resulting Security is derived from this ×
+  // whatever CoinMarketCap says the price is right now wherever it's
+  // live-patched (dashboard portfolio grid, crypto page), rather than the
+  // other way around — quantity used to be *backed out* of a static value
+  // divided by the current price, which meant "how much BTC you own"
+  // silently changed every time the market price moved.
+  BTC: { name: "Bitcoin", changePct: 4.8, color: "#f79414", avgBuyPriceGBP: 38000, cmcId: 1, quantity: 0.3751 },
+  ETH: { name: "Ethereum", changePct: 3.1, color: "#8a92b2", avgBuyPriceGBP: 1350, cmcId: 1027, quantity: 7.09 },
+  SOL: { name: "Solana", changePct: 7.9, color: "#00ffbd", avgBuyPriceGBP: 48, cmcId: 5426, quantity: 71.58 },
+  LINK: { name: "Chainlink", changePct: 5.2, color: "#2a5ada", avgBuyPriceGBP: 9.2, cmcId: 1975, quantity: 280.66 },
 };
 
 // `network` is which chain that specific holding actually sits on — real
@@ -182,7 +201,7 @@ const ACCOUNTS: ConnectedAccount[] = [
   { id: "rabby-wallet", name: "Rabby Wallet", provider: "rabby", category: "crypto", balance: sumCryptoByAccount("rabby-wallet"), status: "connected", logo: "/icons/platforms/rabby.svg", networks: getNetworksForAccount("rabby-wallet") },
   { id: "coinbase", name: "Coinbase", provider: "coinbase", category: "crypto", balance: sumCryptoByAccount("coinbase"), status: "connected", logo: "/icons/platforms/coinbase.png", networks: getNetworksForAccount("coinbase") },
   { id: "kraken", name: "Kraken", provider: "kraken", category: "crypto", balance: sumCryptoByAccount("kraken"), status: "connected", logo: "/icons/platforms/kraken.png", networks: getNetworksForAccount("kraken") },
-  { id: "aviva-pension", name: "Aviva Workplace Pension", provider: "aviva", category: "pension", balance: 62000, status: "connected", logo: "/icons/platforms/aviva.svg" },
+  { id: "aviva-pension", name: "Aviva Workplace Pension", provider: "aviva", category: "pension", balance: 62000, status: "connected", logo: "/icons/platforms/aviva.svg", accountType: "Balanced Pension Fund" },
   { id: "paypal", name: "PayPal", provider: "paypal", category: "payments", balance: 180, status: "syncing", logo: "/icons/platforms/paypal.svg" },
 ];
 
@@ -202,11 +221,15 @@ const SECURITIES: Security[] = [
     accountId:
       [...CRYPTO_ALLOCATIONS].filter((row) => row.symbol === symbol).sort((a, b) => b.value - a.value)[0]
         ?.accountId ?? "",
+    // Static fallback for anywhere that doesn't live-price crypto (net
+    // worth, other dashboard pages) — the dashboard portfolio grid and
+    // crypto page override this with quantity × live price instead.
     value: sumCryptoBySymbol(symbol),
     changePct: info.changePct,
     color: info.color,
     avgBuyPriceGBP: info.avgBuyPriceGBP,
     cmcId: info.cmcId,
+    quantity: info.quantity,
   })),
 ];
 
@@ -245,8 +268,13 @@ const RECURRING_ITEMS: RecurringItem[] = [
   { day: 12, description: "Gym membership", merchant: "PureGym", category: "Health & Fitness", amount: -24.99, accountId: "monzo-current" },
   { day: 15, description: "Home insurance", merchant: "Aviva Home Insurance", category: "Bills & Utilities", amount: -28, accountId: "barclays-current" },
   { day: 20, description: "Dividend received", merchant: "Trading 212", category: "Investing Income", amount: 22, accountId: "trading212-isa" },
+  { day: 6, description: "Bought Nvidia shares", merchant: "Trading 212", category: "Investing", amount: -300, accountId: "trading212-gia" },
   { day: 28, description: "Salary", merchant: "Northbridge Digital Ltd", category: "Income", amount: 3800, accountId: "barclays-current" },
   { day: 29, description: "ISA contribution", merchant: "Trading 212", category: "Investing", amount: -400, accountId: "barclays-current" },
+  { day: 27, description: "Transfer to savings", merchant: "Barclays Savings Account", category: "Transfers", amount: 300, accountId: "barclays-savings" },
+  { day: 27, description: "Round-up savings", merchant: "Monzo Savings Pot", category: "Transfers", amount: 45, accountId: "monzo-savings" },
+  { day: 28, description: "Employer contribution", merchant: "Northbridge Digital Ltd", category: "Pension", amount: 250, accountId: "aviva-pension" },
+  { day: 28, description: "Personal contribution", merchant: "Aviva", category: "Pension", amount: 120, accountId: "aviva-pension" },
 ];
 
 type VariableItem = Omit<RecurringItem, "day"> & { day: number };
@@ -263,6 +291,7 @@ const JUNE_VARIABLE: VariableItem[] = [
   { day: 21, description: "New trainers", merchant: "JD Sports", category: "Shopping", amount: -64.99, accountId: "monzo-current" },
   { day: 24, description: "Weekly shop", merchant: "Tesco", category: "Groceries", amount: -66.75, accountId: "monzo-current" },
   { day: 26, description: "Ride home", merchant: "Uber", category: "Transport", amount: -12.80, accountId: "monzo-current" },
+  { day: 14, description: "Bought Ethereum", merchant: "MetaMask", category: "Investing", amount: -300.00, accountId: "metamask" },
 ];
 
 const JULY_VARIABLE: VariableItem[] = [
@@ -279,6 +308,7 @@ const JULY_VARIABLE: VariableItem[] = [
   { day: 22, description: "New outfit", merchant: "ASOS", category: "Shopping", amount: -45.00, accountId: "monzo-current" },
   { day: 23, description: "Freelance project payment", merchant: "PayPal", category: "Freelance Income", amount: 450.00, accountId: "paypal" },
   { day: 25, description: "Running shoes", merchant: "JD Sports", category: "Shopping", amount: -69.99, accountId: "monzo-current" },
+  { day: 8, description: "Transfer from Coinbase", merchant: "Ledger", category: "Transfers", amount: 850.00, accountId: "ledger" },
 ];
 
 const AUGUST_VARIABLE: VariableItem[] = [
@@ -292,6 +322,8 @@ const AUGUST_VARIABLE: VariableItem[] = [
   { day: 18, description: "Freelance project payment", merchant: "PayPal", category: "Freelance Income", amount: 520.00, accountId: "paypal" },
   { day: 20, description: "Weekly shop", merchant: "Tesco", category: "Groceries", amount: -69.90, accountId: "monzo-current" },
   { day: 22, description: "Bought Bitcoin", merchant: "Coinbase", category: "Investing", amount: -200.00, accountId: "coinbase" },
+  { day: 12, description: "Bought Solana", merchant: "Kraken", category: "Investing", amount: -180.00, accountId: "kraken" },
+  { day: 15, description: "Swapped ETH for LINK", merchant: "Rabby Wallet", category: "Investing", amount: -120.00, accountId: "rabby-wallet" },
 ];
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
@@ -646,6 +678,12 @@ export function getPortfolioContext(): PortfolioContext {
     netWorthTrendPct: netWorthChangePct,
   });
 
+  const portfolioRisk = calculatePortfolioRiskScore({
+    securities: SECURITIES,
+    cash,
+    pensionAccounts: allAccounts.filter((a) => a.category === "pension"),
+  });
+
   return {
     profile: PROFILE,
     netWorth,
@@ -656,6 +694,7 @@ export function getPortfolioContext(): PortfolioContext {
     monthlySpending,
     healthScore,
     riskProfile: "Moderate",
+    portfolioRisk,
     holdings,
     securities: SECURITIES,
     goals: getAllGoals(),

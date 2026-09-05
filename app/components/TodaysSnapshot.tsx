@@ -3,11 +3,14 @@
 import EdgeGlow from "./EdgeGlow";
 import { useEdgeGlow } from "../hooks/useEdgeGlow";
 
+export type RiskColor = "green" | "amber" | "orange" | "red";
+
 export type SnapshotData = {
   netWorthChange: string;
   bestPerformerLabel: string;
   bestPerformerChange: string;
   riskLevel: string;
+  riskColor: RiskColor;
   goalProgress: number;
 };
 
@@ -15,8 +18,16 @@ const MOCK_SNAPSHOT: SnapshotData = {
   netWorthChange: "+£418",
   bestPerformerLabel: "NVDA",
   bestPerformerChange: "+6.1%",
-  riskLevel: "Moderate",
+  riskLevel: "Moderate Risk",
+  riskColor: "amber",
   goalProgress: 78,
+};
+
+const RISK_COLOR_CLASS: Record<RiskColor, string> = {
+  green: "text-accent",
+  amber: "text-amber-400",
+  orange: "text-orange-400",
+  red: "text-red-400",
 };
 
 type TodaysSnapshotProps = Partial<SnapshotData>;
@@ -26,6 +37,7 @@ export default function TodaysSnapshot({
   bestPerformerLabel = MOCK_SNAPSHOT.bestPerformerLabel,
   bestPerformerChange = MOCK_SNAPSHOT.bestPerformerChange,
   riskLevel = MOCK_SNAPSHOT.riskLevel,
+  riskColor = MOCK_SNAPSHOT.riskColor,
   goalProgress = MOCK_SNAPSHOT.goalProgress,
 }: TodaysSnapshotProps) {
   const { cardRef, handleMouseMove } = useEdgeGlow<HTMLDivElement>();
@@ -90,7 +102,7 @@ export default function TodaysSnapshot({
             />
             Risk Level
           </span>
-          <span className="shrink-0 text-sm font-semibold whitespace-nowrap text-purple-400">
+          <span className={`shrink-0 text-sm font-semibold whitespace-nowrap ${RISK_COLOR_CLASS[riskColor]}`}>
             {riskLevel}
           </span>
         </div>
