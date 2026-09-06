@@ -128,7 +128,7 @@ export default function AddAccountPanel({ open, onClose }: { open: boolean; onCl
   if (typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50">
+    <div className="wp-dark-scope fixed inset-0 z-50">
       <div
         className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ease-out ${
           mounted ? "opacity-100" : "opacity-0"

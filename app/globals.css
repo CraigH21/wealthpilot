@@ -17,6 +17,7 @@
   --accent-from: #34d399;
   --accent-to: #059669;
   --bg-image: url("/themes/bg-emerald.jpg");
+  --bg-image-dark: url("/themes/bg-emerald-dark.jpg");
 
   /* "Pro" accent deliberately borrows the NEXT theme's colour rather than
      the active one, so the upgrade box always pops instead of blending
@@ -42,6 +43,7 @@
   --accent-from: #34d399;
   --accent-to: #059669;
   --bg-image: url("/themes/bg-emerald.jpg");
+  --bg-image-dark: url("/themes/bg-emerald-dark.jpg");
   --pro-accent: #c084fc;
   --pro-soft: rgba(168, 85, 247, 0.14);
   --pro-strong: rgba(168, 85, 247, 0.3);
@@ -59,6 +61,7 @@
   --accent-from: #c084fc;
   --accent-to: #9333ea;
   --bg-image: url("/themes/bg-purple.jpg");
+  --bg-image-dark: url("/themes/bg-purple-dark.jpg");
   --pro-accent: #38bdf8;
   --pro-soft: rgba(14, 165, 233, 0.14);
   --pro-strong: rgba(14, 165, 233, 0.3);
@@ -76,6 +79,7 @@
   --accent-from: #38bdf8;
   --accent-to: #0284c7;
   --bg-image: url("/themes/bg-ocean.jpg");
+  --bg-image-dark: url("/themes/bg-ocean-dark.jpg");
   --pro-accent: #f59e0b;
   --pro-soft: rgba(245, 158, 11, 0.14);
   --pro-strong: rgba(245, 158, 11, 0.3);
@@ -93,6 +97,7 @@
   --accent-from: #f59e0b;
   --accent-to: #b45309;
   --bg-image: url("/themes/bg-gold.jpg");
+  --bg-image-dark: url("/themes/bg-gold-dark.jpg");
   --tertiary-accent: #c084fc;
   --pro-accent: #34d399;
   --pro-soft: rgba(16, 185, 129, 0.14);
@@ -106,8 +111,8 @@
 [data-mode="dark"] {
   --background: #07131f;
   --foreground: #f4f4f5;
-  --glass-shell-bg: rgba(16, 34, 53, 0.92);
-  --glass-card-bg: rgba(16, 34, 53, 0.92);
+  --glass-shell-bg: rgba(16, 34, 53, 0.62);
+  --glass-card-bg: rgba(16, 34, 53, 0.8);
 }
 
 @theme inline {
@@ -135,11 +140,13 @@ body {
   transition: background-image 500ms ease-out;
 }
 
-/* Dark mode drops the decorative per-theme wallpaper photo entirely — the
-   flat navy background is the whole point, not a dimmed version of the
-   light wallpaper. */
+/* Dark mode swaps in its own per-theme wallpaper (dark navy with the
+   accent colour's own ribbon artwork) rather than dimming the light
+   wallpaper — a light tint on a photo already this dark just muddies it,
+   so the overlay is a soft black vignette instead of light mode's white
+   one, to help foreground glass cards still read clearly on top. */
 [data-mode="dark"] body {
-  background-image: none;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), var(--bg-image-dark);
 }
 
 /* Shared "3D glass edge" treatment: a thin theme-coloured border plus a
@@ -206,54 +213,68 @@ body {
 }
 
 /* ---------------------------------------------------------------------
-   Dark mode text/border overrides, scoped to the dashboard shell only.
-   Components throughout the dashboard hardcode Tailwind's zinc/black
-   utilities directly (text-zinc-900, bg-black/5, border-black/10, etc.)
-   rather than a semantic "foreground" token, so a background/card swap
-   alone would leave near-black text sitting on a near-black card. Rather
-   than touching every component file, this redefines what those specific
-   utilities resolve to once dark mode is active. Scoped under
-   `.glass-edge-shell` (the dashboard's own wrapper, used nowhere else)
-   so the separate marketing landing page — which already has its own
+   Dark mode text/border overrides, scoped to the dashboard shell and to
+   `.wp-dark-scope` (a marker class on the 3 modals/panels that portal to
+   document.body — AccountDetailsModal, AddAccountPanel, SetGoalPanel —
+   so they sit outside the shell's DOM subtree and would otherwise miss
+   these rules entirely). Components throughout the dashboard hardcode
+   Tailwind's zinc/black utilities directly (text-zinc-900, bg-black/5,
+   border-black/10, etc.) rather than a semantic "foreground" token, so a
+   background/card swap alone would leave near-black text sitting on a
+   near-black card. Rather than touching every component file, this
+   redefines what those specific utilities resolve to once dark mode is
+   active. Scoped this way (rather than a bare `[data-mode="dark"]`) so
+   the separate marketing landing page — which already has its own
    intentionally-dark styling using some of these same classes — is never
-   touched by this.
-   --------------------------------------------------------------------- */
-[data-mode="dark"] .glass-edge-shell .text-zinc-900 {
+   touched by this. */
+[data-mode="dark"] .glass-edge-shell .text-zinc-900,
+[data-mode="dark"] .wp-dark-scope .text-zinc-900 {
   color: #f4f4f5;
 }
-[data-mode="dark"] .glass-edge-shell .text-zinc-700 {
+[data-mode="dark"] .glass-edge-shell .text-zinc-700,
+[data-mode="dark"] .wp-dark-scope .text-zinc-700 {
   color: #e4e4e7;
 }
-[data-mode="dark"] .glass-edge-shell .text-zinc-600 {
+[data-mode="dark"] .glass-edge-shell .text-zinc-600,
+[data-mode="dark"] .wp-dark-scope .text-zinc-600 {
   color: #d4d4d8;
 }
-[data-mode="dark"] .glass-edge-shell .text-zinc-500 {
+[data-mode="dark"] .glass-edge-shell .text-zinc-500,
+[data-mode="dark"] .wp-dark-scope .text-zinc-500 {
   color: #a1a1aa;
 }
-[data-mode="dark"] .glass-edge-shell .text-zinc-400 {
+[data-mode="dark"] .glass-edge-shell .text-zinc-400,
+[data-mode="dark"] .wp-dark-scope .text-zinc-400 {
   color: #71717a;
 }
-[data-mode="dark"] .glass-edge-shell .bg-black\/5 {
+[data-mode="dark"] .glass-edge-shell .bg-black\/5,
+[data-mode="dark"] .wp-dark-scope .bg-black\/5 {
   background-color: rgba(255, 255, 255, 0.06);
 }
-[data-mode="dark"] .glass-edge-shell .bg-black\/10 {
+[data-mode="dark"] .glass-edge-shell .bg-black\/10,
+[data-mode="dark"] .wp-dark-scope .bg-black\/10 {
   background-color: rgba(255, 255, 255, 0.1);
 }
-[data-mode="dark"] .glass-edge-shell .hover\:bg-black\/5:hover {
+[data-mode="dark"] .glass-edge-shell .hover\:bg-black\/5:hover,
+[data-mode="dark"] .wp-dark-scope .hover\:bg-black\/5:hover {
   background-color: rgba(255, 255, 255, 0.06);
 }
-[data-mode="dark"] .glass-edge-shell .hover\:bg-black\/10:hover {
+[data-mode="dark"] .glass-edge-shell .hover\:bg-black\/10:hover,
+[data-mode="dark"] .wp-dark-scope .hover\:bg-black\/10:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
-[data-mode="dark"] .glass-edge-shell .border-black\/10 {
+[data-mode="dark"] .glass-edge-shell .border-black\/10,
+[data-mode="dark"] .wp-dark-scope .border-black\/10 {
   border-color: rgba(255, 255, 255, 0.14);
 }
-[data-mode="dark"] .glass-edge-shell .divide-black\/5 > :not([hidden]) ~ :not([hidden]) {
+[data-mode="dark"] .glass-edge-shell .divide-black\/5 > :not([hidden]) ~ :not([hidden]),
+[data-mode="dark"] .wp-dark-scope .divide-black\/5 > :not([hidden]) ~ :not([hidden]) {
   border-color: rgba(255, 255, 255, 0.08);
 }
 /* "Floating white box" elements (AI Coach's insight cards, the Goals
    rings' circular backdrop) — swap to the same dark card tone as the
    rest of the shell instead of staying a jarring solid white. */
-[data-mode="dark"] .glass-edge-shell .bg-white {
+[data-mode="dark"] .glass-edge-shell .bg-white,
+[data-mode="dark"] .wp-dark-scope .bg-white {
   background-color: var(--glass-card-bg);
 }
